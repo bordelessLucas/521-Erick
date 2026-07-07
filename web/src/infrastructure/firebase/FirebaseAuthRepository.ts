@@ -1,15 +1,24 @@
 import {
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  updateProfile,
 } from 'firebase/auth';
-import { getFirebaseAuth } from '@/core/config/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { getFirebaseAuth, getFirestoreDb } from '@/core/config/firebase';
+import { FIRESTORE_COLLECTIONS } from '@/core/config/firebaseConstants';
 import { User } from '@/domain/entities/User';
 import {
   IAuthRepository,
   SignInCredentials,
+  SignUpCredentials,
 } from '@/domain/repositories/IAuthRepository';
-import { AuthError, resolveAuthEmail } from '@/infrastructure/auth/auth.utils';
+import {
+  AuthError,
+  mapFirebaseAuthError,
+  resolveAuthEmail,
+} from '@/infrastructure/auth/auth.utils';
 
 function mapFirebaseUser(firebaseUser: {
   uid: string;
@@ -36,14 +45,33 @@ export class FirebaseAuthRepository implements IAuthRepository {
       );
       return mapFirebaseUser(user);
     } catch (error) {
-      if (error instanceof AuthError) {
-        throw error;
-      }
+      throw mapFirebaseAuthError(error);
+    }
+  }
 
-      throw new AuthError(
-        'Credenciais inválidas. Verifique o e-mail e a palavra-passe.',
-        'INVALID_CREDENTIALS',
+  async signUp(credentials: SignUpCredentials): Promise<User> {
+    try {
+      const { user } = await createUserWithEmailAndPassword(
+        getFirebaseAuth(),
+        credentials.email,
+        credentials.password,
       );
+
+      await updateProfile(user, { displayName: credentials.companyName });
+
+      await setDoc(doc(getFirestoreDb(), FIRESTORE_COLLECTIONS.users, user.uid), {
+        email: credentials.email,
+        companyName: credentials.companyName,
+        clientCnpj: credentials.cnpj,
+        createdAt: new Date().toISOString(),
+      });
+
+      return mapFirebaseUser({
+        ...user,
+        displayName: credentials.companyName,
+      });
+    } catch (error) {
+      throw mapFirebaseAuthError(error);
     }
   }
 

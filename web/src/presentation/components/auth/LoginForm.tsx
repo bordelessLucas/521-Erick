@@ -98,9 +98,9 @@ export function LoginForm() {
       </Button>
 
       <p className="text-center text-sm text-neutral-500">
-        Ainda não tem acesso?{' '}
-        <Link href="/" className="font-medium text-primary-800 hover:underline">
-          Contacte o departamento comercial
+        Ainda não tem conta?{' '}
+        <Link href="/register" className="font-medium text-primary-800 hover:underline">
+          Criar conta
         </Link>
       </p>
     </form>

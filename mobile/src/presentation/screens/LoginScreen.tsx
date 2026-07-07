@@ -7,18 +7,21 @@ import {
   Platform,
   ScrollView,
   Alert,
+  Pressable,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { loginSchema } from '@/domain/schemas/auth.schema';
 import { formatCnpj, normalizeCnpj } from '@/domain/utils/cnpj';
+import { AuthError } from '@/infrastructure/auth/auth.utils';
+import { container } from '@/infrastructure/di/container';
 import { AppText } from '@/presentation/components/ui/Text';
 import { Button } from '@/presentation/components/ui/Button';
 import { Input } from '@/presentation/components/ui/Input';
 import { colors, spacing, borderRadius } from '@/core/theme';
-import { container } from '@/infrastructure/di/container';
 
 interface LoginScreenProps {
   onLoginSuccess: () => void;
+  onNavigateToRegister: () => void;
 }
 
 interface FieldErrors {
@@ -26,7 +29,7 @@ interface FieldErrors {
   password?: string;
 }
 
-export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
+export function LoginScreen({ onLoginSuccess, onNavigateToRegister }: LoginScreenProps) {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -60,13 +63,14 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
     setIsLoading(true);
 
     try {
-      await container.getSignInUseCase().execute(result.data);
+      await container.getAuthService().login(result.data);
       onLoginSuccess();
-    } catch {
-      Alert.alert(
-        'Erro ao entrar',
-        'Credenciais inválidas ou serviço indisponível. Tente novamente.',
-      );
+    } catch (error) {
+      const message =
+        error instanceof AuthError
+          ? error.message
+          : 'Credenciais inválidas ou serviço indisponível. Tente novamente.';
+      Alert.alert('Erro ao entrar', message);
     } finally {
       setIsLoading(false);
     }
@@ -124,6 +128,19 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                 disabled={isLoading}
                 onPress={handleSubmit}
               />
+
+              <Pressable
+                onPress={onNavigateToRegister}
+                accessibilityRole="button"
+                accessibilityLabel="Ainda não tem conta? Criar conta"
+              >
+                <AppText variant="bodySmall" color={colors.text.secondary} style={styles.footer}>
+                  Ainda não tem conta?{' '}
+                  <AppText variant="bodySmall" color={colors.primary.DEFAULT} style={styles.link}>
+                    Criar conta
+                  </AppText>
+                </AppText>
+              </Pressable>
             </View>
           </View>
         </ScrollView>
@@ -175,5 +192,12 @@ const styles = StyleSheet.create({
   },
   form: {
     gap: spacing.md,
+  },
+  footer: {
+    textAlign: 'center',
+    marginTop: spacing.sm,
+  },
+  link: {
+    fontWeight: '600',
   },
 });

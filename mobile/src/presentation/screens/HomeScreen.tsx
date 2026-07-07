@@ -1,14 +1,16 @@
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppText } from '@/presentation/components/ui/Text';
 import { Button } from '@/presentation/components/ui/Button';
 import { colors, spacing } from '@/core/theme';
+import type { RootStackParamList } from '@/presentation/navigation/types';
 
-interface HomeScreenProps {
+type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'> & {
   onLogout: () => void;
-}
+};
 
-export function HomeScreen({ onLogout }: HomeScreenProps) {
+export function HomeScreen({ navigation, onLogout }: HomeScreenProps) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -28,7 +30,12 @@ export function HomeScreen({ onLogout }: HomeScreenProps) {
         </View>
 
         <View style={styles.actions}>
-          <Button title="Ver pedidos" variant="secondary" fullWidth />
+          <Button
+            title="Ver pedidos"
+            variant="secondary"
+            fullWidth
+            onPress={() => navigation.navigate('Orders')}
+          />
           <Button title="Terminar sessão" variant="outline" fullWidth onPress={onLogout} />
         </View>
       </View>

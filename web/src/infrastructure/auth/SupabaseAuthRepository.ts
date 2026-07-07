@@ -1,5 +1,4 @@
-import { IAuthRepository } from '@/domain/repositories/IAuthRepository';
-import { SignInCredentials } from '@/domain/repositories/IAuthRepository';
+import { IAuthRepository, SignInCredentials, SignUpCredentials } from '@/domain/repositories/IAuthRepository';
 import { User } from '@/domain/entities/User';
 
 /**
@@ -8,6 +7,10 @@ import { User } from '@/domain/entities/User';
  */
 export class SupabaseAuthRepository implements IAuthRepository {
   async signIn(_credentials: SignInCredentials): Promise<User> {
+    throw new Error('Supabase Auth ainda não configurado.');
+  }
+
+  async signUp(_credentials: SignUpCredentials): Promise<User> {
     throw new Error('Supabase Auth ainda não configurado.');
   }
 
