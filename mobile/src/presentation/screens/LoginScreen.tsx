@@ -1,26 +1,19 @@
 import { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
-  Pressable,
-} from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { loginSchema } from '@/domain/schemas/auth.schema';
 import { formatCnpj, normalizeCnpj } from '@/domain/utils/cnpj';
 import { AuthError } from '@/infrastructure/auth/auth.utils';
 import { container } from '@/infrastructure/di/container';
+import { resolvePostAuthRoute } from '@/infrastructure/firebase/FirebaseUserProfileRepository';
+import { colors, spacing } from '@/core/theme';
+import { TrancattoAuthLayout } from '@/presentation/components/layout/TrancattoAuthLayout';
 import { AppText } from '@/presentation/components/ui/Text';
 import { Button } from '@/presentation/components/ui/Button';
 import { Input } from '@/presentation/components/ui/Input';
-import { colors, spacing, borderRadius } from '@/core/theme';
+import { useAuth } from '@/presentation/context/AuthContext';
 
 interface LoginScreenProps {
-  onLoginSuccess: () => void;
   onNavigateToRegister: () => void;
 }
 
@@ -29,7 +22,8 @@ interface FieldErrors {
   password?: string;
 }
 
-export function LoginScreen({ onLoginSuccess, onNavigateToRegister }: LoginScreenProps) {
+export function LoginScreen({ onNavigateToRegister }: LoginScreenProps) {
+  const { refreshRole } = useAuth();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -64,7 +58,8 @@ export function LoginScreen({ onLoginSuccess, onNavigateToRegister }: LoginScree
 
     try {
       await container.getAuthService().login(result.data);
-      onLoginSuccess();
+      await refreshRole();
+      await resolvePostAuthRoute();
     } catch (error) {
       const message =
         error instanceof AuthError
@@ -77,119 +72,55 @@ export function LoginScreen({ onLoginSuccess, onNavigateToRegister }: LoginScree
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <TrancattoAuthLayout
+      title="Acessar minha conta"
+      subtitle="Entre com CNPJ ou e-mail para acompanhar pedidos e produção em tempo real."
+    >
       <StatusBar style="dark" />
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-        >
-          <AppText variant="label" color={colors.primary.DEFAULT} style={styles.brand}>
-            Cordas Industriais
+      <View style={styles.form}>
+        <Input
+          label="CNPJ ou E-mail"
+          placeholder="00.000.000/0000-00 ou empresa@email.com"
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="email-address"
+          value={identifier}
+          onChangeText={handleIdentifierChange}
+          error={fieldErrors.identifier}
+        />
+
+        <Input
+          label="Palavra-passe"
+          placeholder="••••••••"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          error={fieldErrors.password}
+        />
+
+        <Button
+          title="Entrar"
+          variant="primary"
+          fullWidth
+          isLoading={isLoading}
+          disabled={isLoading}
+          onPress={() => void handleSubmit()}
+        />
+
+        <Pressable onPress={onNavigateToRegister} accessibilityRole="button">
+          <AppText variant="bodySmall" color={colors.muted} style={styles.footer}>
+            Ainda não tem conta?{' '}
+            <AppText variant="bodySmall" color={colors.pine} style={styles.link}>
+              Criar conta
+            </AppText>
           </AppText>
-
-          <View style={styles.card}>
-            <AppText variant="h2" style={styles.title}>
-              Portal do Cliente
-            </AppText>
-            <AppText variant="bodySmall" color={colors.text.secondary} style={styles.subtitle}>
-              Inicie sessão para acompanhar pedidos e produção em tempo real.
-            </AppText>
-
-            <View style={styles.form}>
-              <Input
-                label="CNPJ ou E-mail"
-                placeholder="00.000.000/0000-00 ou empresa@email.com"
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="email-address"
-                value={identifier}
-                onChangeText={handleIdentifierChange}
-                error={fieldErrors.identifier}
-              />
-
-              <Input
-                label="Palavra-passe"
-                placeholder="••••••••"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-                error={fieldErrors.password}
-              />
-
-              <Button
-                title="Entrar"
-                variant="secondary"
-                fullWidth
-                isLoading={isLoading}
-                disabled={isLoading}
-                onPress={handleSubmit}
-              />
-
-              <Pressable
-                onPress={onNavigateToRegister}
-                accessibilityRole="button"
-                accessibilityLabel="Ainda não tem conta? Criar conta"
-              >
-                <AppText variant="bodySmall" color={colors.text.secondary} style={styles.footer}>
-                  Ainda não tem conta?{' '}
-                  <AppText variant="bodySmall" color={colors.primary.DEFAULT} style={styles.link}>
-                    Criar conta
-                  </AppText>
-                </AppText>
-              </Pressable>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        </Pressable>
+      </View>
+    </TrancattoAuthLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background.primary,
-  },
-  flex: {
-    flex: 1,
-  },
-  scroll: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl,
-  },
-  brand: {
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-    fontWeight: '700',
-    fontSize: 18,
-  },
-  card: {
-    backgroundColor: colors.background.secondary,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.border.default,
-    padding: spacing.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  title: {
-    color: colors.primary.DEFAULT,
-    textAlign: 'center',
-  },
-  subtitle: {
-    textAlign: 'center',
-    marginTop: spacing.sm,
-    marginBottom: spacing.lg,
-  },
   form: {
     gap: spacing.md,
   },

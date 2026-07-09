@@ -23,6 +23,9 @@
     },
     "experiments": {
       "tsconfigPaths": true
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

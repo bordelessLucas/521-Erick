@@ -4,12 +4,24 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FirebaseError } from 'firebase/app';
 import type { Order, OrderStatus } from '@/domain/entities/Order';
-import type { CreateOrderData } from '@/domain/repositories/IOrderRepository';
+import type { ClientAccessCredentials, ClientSummary } from '@/domain/entities/Client';
+import type { CreateOrderWithClientInput } from '@/application/orders/AdminOrderService';
 import { AuthSessionError } from '@/infrastructure/firebase/firebaseAuthSession';
+import { ClientProvisioningError } from '@/infrastructure/firebase/FirebaseClientRepository';
 import { isCurrentUserAdmin } from '@/infrastructure/firebase/FirebaseUserProfileRepository';
+import { formatCnpj, isValidCnpj, normalizeCnpj } from '@/domain/utils/cnpj';
+
+export interface CreateOrderOutcome {
+  success: boolean;
+  newClientCredentials?: ClientAccessCredentials;
+}
 
 function resolveAdminOrdersError(error: unknown): string {
   if (error instanceof AuthSessionError) {
+    return error.message;
+  }
+
+  if (error instanceof ClientProvisioningError) {
     return error.message;
   }
 
@@ -36,7 +48,8 @@ interface UseAdminOrdersReturn {
   error: string | null;
   isMutating: boolean;
   refresh: () => Promise<void>;
-  createOrder: (data: CreateOrderData) => Promise<boolean>;
+  lookupClientByCnpj: (clientCnpj: string) => Promise<ClientSummary | null>;
+  createOrder: (data: CreateOrderWithClientInput) => Promise<CreateOrderOutcome>;
   updateOrderStatus: (orderId: string, status: OrderStatus) => Promise<boolean>;
 }
 
@@ -75,24 +88,38 @@ export function useAdminOrders(): UseAdminOrdersReturn {
     }
   }, [router]);
 
+  const lookupClientByCnpj = useCallback(async (clientCnpj: string) => {
+    if (!isValidCnpj(clientCnpj)) {
+      return null;
+    }
+
+    const { container } = await import('@/infrastructure/di/container');
+    return container.getClientRepository().findByCnpj(formatCnpj(normalizeCnpj(clientCnpj)));
+  }, []);
+
   const createOrder = useCallback(
-    async (data: CreateOrderData): Promise<boolean> => {
+    async (data: CreateOrderWithClientInput): Promise<CreateOrderOutcome> => {
       setIsMutating(true);
       setError(null);
 
       try {
         const { container } = await import('@/infrastructure/di/container');
-        const created = await container.getOrderRepository().create(data);
+        const result = await container.getAdminOrderService().createOrderWithClient(data);
+
         setOrders((current) =>
-          [created, ...current].sort(
+          [result.order, ...current].sort(
             (left, right) =>
               new Date(right.orderDate).getTime() - new Date(left.orderDate).getTime(),
           ),
         );
-        return true;
+
+        return {
+          success: true,
+          newClientCredentials: result.newClientCredentials,
+        };
       } catch (err) {
         setError(resolveAdminOrdersError(err));
-        return false;
+        return { success: false };
       } finally {
         setIsMutating(false);
       }
@@ -135,6 +162,7 @@ export function useAdminOrders(): UseAdminOrdersReturn {
     error,
     isMutating,
     refresh,
+    lookupClientByCnpj,
     createOrder,
     updateOrderStatus,
   };

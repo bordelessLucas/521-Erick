@@ -1,7 +1,6 @@
 import { TextInput, TextInputProps, View, StyleSheet } from 'react-native';
 import { AppText } from '@/presentation/components/ui/Text';
-import { colors, borderRadius, spacing } from '@/core/theme';
-
+import { colors, spacing } from '@/core/theme';
 interface InputProps extends TextInputProps {
   label: string;
   error?: string;
@@ -39,8 +38,8 @@ const styles = StyleSheet.create({
     height: 48,
     borderWidth: 1,
     borderColor: colors.border.default,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.background.secondary,
+    borderRadius: 0,
+    backgroundColor: colors.white,
     paddingHorizontal: spacing.md,
     fontSize: 16,
     color: colors.text.primary,

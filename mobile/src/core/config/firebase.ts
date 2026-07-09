@@ -1,4 +1,4 @@
-import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
+import { FirebaseApp, getApps, initializeApp } from 'firebase/app';
 import { Auth, getAuth } from 'firebase/auth';
 import { Firestore, getFirestore } from 'firebase/firestore';
 import { FIREBASE_CONFIG } from '@/core/config/firebaseConstants';
@@ -17,8 +17,10 @@ function resolveConfig() {
 }
 
 function getFirebaseApp(): FirebaseApp {
-  if (getApps().length > 0) {
-    return getApp();
+  const defaultApp = getApps().find((app) => app.name === '[DEFAULT]');
+
+  if (defaultApp) {
+    return defaultApp;
   }
 
   return initializeApp(resolveConfig());

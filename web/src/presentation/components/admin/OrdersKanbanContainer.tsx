@@ -1,14 +1,25 @@
 'use client';
 
 import { useState } from 'react';
+import type { ClientAccessCredentials } from '@/domain/entities/Client';
 import { useAdminOrders } from '@/presentation/hooks/useAdminOrders';
+import { ClientCredentialsModal } from './ClientCredentialsModal';
 import { CreateOrderModal } from './CreateOrderModal';
 import { OrdersKanbanBoard } from './OrdersKanbanBoard';
 
 export function OrdersKanbanContainer() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { orders, isLoading, error, isMutating, createOrder, updateOrderStatus } =
-    useAdminOrders();
+  const [newClientCredentials, setNewClientCredentials] =
+    useState<ClientAccessCredentials | null>(null);
+  const {
+    orders,
+    isLoading,
+    error,
+    isMutating,
+    lookupClientByCnpj,
+    createOrder,
+    updateOrderStatus,
+  } = useAdminOrders();
 
   if (isLoading) {
     return (
@@ -52,7 +63,21 @@ export function OrdersKanbanContainer() {
         isOpen={isCreateModalOpen}
         isSubmitting={isMutating}
         onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={createOrder}
+        onLookupClient={lookupClientByCnpj}
+        onSubmit={async (data) => {
+          const result = await createOrder(data);
+
+          if (result.success && result.newClientCredentials) {
+            setNewClientCredentials(result.newClientCredentials);
+          }
+
+          return result.success;
+        }}
+      />
+
+      <ClientCredentialsModal
+        credentials={newClientCredentials}
+        onClose={() => setNewClientCredentials(null)}
       />
     </div>
   );

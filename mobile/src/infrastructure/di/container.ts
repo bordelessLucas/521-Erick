@@ -1,14 +1,19 @@
 import { FirebaseAuthRepository } from '@/infrastructure/firebase/FirebaseAuthRepository';
+import { FirebaseClientRepository } from '@/infrastructure/firebase/FirebaseClientRepository';
 import { FirebaseOrderRepository } from '@/infrastructure/firebase/FirebaseOrderRepository';
 import { SignInUseCase } from '@/domain/usecases/SignInUseCase';
 import { SignUpUseCase } from '@/domain/usecases/SignUpUseCase';
 import { AuthService } from '@/application/auth/AuthService';
+import { AdminOrderService } from '@/application/orders/AdminOrderService';
 import { IAuthRepository } from '@/domain/repositories/IAuthRepository';
+import { IClientRepository } from '@/domain/repositories/IClientRepository';
 import { IOrderRepository } from '@/domain/repositories/IOrderRepository';
 
 class Container {
   private authRepository: IAuthRepository | null = null;
   private orderRepository: IOrderRepository | null = null;
+  private clientRepository: IClientRepository | null = null;
+  private adminOrderService: AdminOrderService | null = null;
 
   getAuthRepository(): IAuthRepository {
     if (!this.authRepository) {
@@ -22,6 +27,23 @@ class Container {
       this.orderRepository = new FirebaseOrderRepository();
     }
     return this.orderRepository;
+  }
+
+  getClientRepository(): IClientRepository {
+    if (!this.clientRepository) {
+      this.clientRepository = new FirebaseClientRepository();
+    }
+    return this.clientRepository;
+  }
+
+  getAdminOrderService(): AdminOrderService {
+    if (!this.adminOrderService) {
+      this.adminOrderService = new AdminOrderService(
+        this.getOrderRepository(),
+        this.getClientRepository(),
+      );
+    }
+    return this.adminOrderService;
   }
 
   getSignInUseCase(): SignInUseCase {

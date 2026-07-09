@@ -1917,6 +1917,75 @@
   cursor: not-allowed;
 }
 
+.kanban-client-hint {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.kanban-client-banner {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.kanban-client-banner--existing {
+  background: #eef4f0;
+  color: var(--pine);
+}
+
+.kanban-client-banner--new {
+  background: rgba(198, 94, 52, 0.08);
+  color: #8a3f22;
+  border-color: rgba(198, 94, 52, 0.2);
+}
+
+.kanban-client-banner__title {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+
+.kanban-client-banner p {
+  margin: 0;
+}
+
+.kanban-credentials__intro {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.kanban-credentials__list {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+}
+
+.kanban-credentials__list div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.kanban-credentials__list dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+
+.kanban-credentials__list dd {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.kanban-credentials__password {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.04em;
+}
+
 .orders-timeline-loading__hint {
   margin-top: 0.5rem;
   font-size: 0.88rem;

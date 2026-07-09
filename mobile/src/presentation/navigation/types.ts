@@ -1,5 +1,5 @@
 export type RootStackParamList = {
-  Home: undefined;
-  Orders: undefined;
-  OrderDetails: { orderId: string };
+  Dashboard: undefined;
+  OrderTracking: { orderId: string };
+  Admin: undefined;
 };

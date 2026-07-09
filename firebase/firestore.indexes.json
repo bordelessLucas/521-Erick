@@ -7,6 +7,13 @@
         { "fieldPath": "clientCnpj", "order": "ASCENDING" },
         { "fieldPath": "orderDate", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "clientCnpj", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

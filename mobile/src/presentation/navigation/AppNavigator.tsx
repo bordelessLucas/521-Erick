@@ -1,42 +1,62 @@
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomeScreen } from '@/presentation/screens/HomeScreen';
-import { OrdersScreen } from '@/presentation/screens/OrdersScreen';
-import { OrderDetailsScreen } from '@/presentation/screens/OrderDetailsScreen';
 import { colors } from '@/core/theme';
+import { useAuth } from '@/presentation/context/AuthContext';
+import { DashboardScreen } from '@/presentation/screens/DashboardScreen';
+import { OrderTrackingScreen } from '@/presentation/screens/OrderTrackingScreen';
+import { AdminScreen } from '@/presentation/screens/AdminScreen';
 import type { RootStackParamList } from '@/presentation/navigation/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-interface AppNavigatorProps {
-  onLogout: () => void;
-}
+export function AppNavigator() {
+  const { isLoading, initialRoute } = useAuth();
 
-export function AppNavigator({ onLogout }: AppNavigatorProps) {
+  if (isLoading) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color={colors.pine} />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
+        initialRouteName={initialRoute}
         screenOptions={{
-          headerStyle: { backgroundColor: colors.background.secondary },
-          headerTintColor: colors.primary.DEFAULT,
+          headerStyle: { backgroundColor: colors.white },
+          headerTintColor: colors.pine,
           headerTitleStyle: { fontWeight: '600' },
-          contentStyle: { backgroundColor: colors.background.primary },
+          contentStyle: { backgroundColor: colors.cream },
         }}
       >
-        <Stack.Screen name="Home" options={{ headerShown: false }}>
-          {(props) => <HomeScreen {...props} onLogout={onLogout} />}
-        </Stack.Screen>
         <Stack.Screen
-          name="Orders"
-          component={OrdersScreen}
-          options={{ title: 'Meus Pedidos' }}
+          name="Dashboard"
+          component={DashboardScreen}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="OrderDetails"
-          component={OrderDetailsScreen}
-          options={{ title: 'Detalhes do Pedido' }}
+          name="Admin"
+          component={AdminScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="OrderTracking"
+          component={OrderTrackingScreen}
+          options={{ title: 'Rastreamento' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.cream,
+  },
+});

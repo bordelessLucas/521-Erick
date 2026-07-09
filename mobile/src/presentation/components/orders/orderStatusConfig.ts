@@ -15,23 +15,23 @@ export const orderStatusConfig: Record<OrderStatus, StatusConfig> = {
   },
   [OrderStatus.APROVADO]: {
     label: 'Aprovado',
-    backgroundColor: colors.primary[100],
-    textColor: colors.primary[800],
+    backgroundColor: colors.creamDark,
+    textColor: colors.pine,
   },
   [OrderStatus.ORDEM_DE_ROLINHO]: {
     label: 'Ordem de Rolinho',
     backgroundColor: '#F3F4F6',
-    textColor: '#374151',
+    textColor: colors.ink,
   },
   [OrderStatus.SEPARACAO]: {
     label: 'Separação',
-    backgroundColor: colors.secondary[100],
-    textColor: colors.secondary[800],
+    backgroundColor: '#fdf0ea',
+    textColor: colors.terra,
   },
   [OrderStatus.PRODUCAO]: {
     label: 'Produção',
-    backgroundColor: '#DBEAFE',
-    textColor: '#1E40AF',
+    backgroundColor: '#e8f0ec',
+    textColor: colors.pine,
   },
   [OrderStatus.FATURADO]: {
     label: 'Faturado',

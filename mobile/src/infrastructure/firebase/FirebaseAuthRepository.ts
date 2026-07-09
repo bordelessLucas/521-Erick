@@ -8,6 +8,7 @@ import {
 import { doc, setDoc } from 'firebase/firestore';
 import { getFirebaseAuth, getFirestoreDb } from '@/core/config/firebase';
 import { FIRESTORE_COLLECTIONS } from '@/core/config/firebaseConstants';
+import { resolveInitialUserRole } from '@/infrastructure/firebase/adminAccess';
 import { User } from '@/domain/entities/User';
 import {
   IAuthRepository,
@@ -63,7 +64,7 @@ export class FirebaseAuthRepository implements IAuthRepository {
         companyName: credentials.companyName,
         clientCnpj: credentials.cnpj,
         createdAt: new Date().toISOString(),
-        role: 'client',
+        role: resolveInitialUserRole(credentials.email),
       });
 
       return mapFirebaseUser({

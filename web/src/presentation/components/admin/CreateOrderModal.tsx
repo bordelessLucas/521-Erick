@@ -1,23 +1,27 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { OrderStatus } from '@/domain/entities/Order';
+import type { ClientSummary } from '@/domain/entities/Client';
 import { ORDER_TIMELINE_STEPS } from '@/presentation/components/orders/orderTimelineSteps';
 import { createOrderSchema, type CreateOrderInput } from '@/domain/schemas/order.schema';
-import type { CreateOrderData } from '@/domain/repositories/IOrderRepository';
-import { formatCnpj } from '@/domain/utils/cnpj';
+import type { CreateOrderWithClientInput } from '@/application/orders/AdminOrderService';
+import { formatCnpj, isValidCnpj } from '@/domain/utils/cnpj';
 import { Input } from '@/presentation/components/ui/Input';
 
 interface CreateOrderModalProps {
   isOpen: boolean;
   isSubmitting: boolean;
   onClose: () => void;
-  onSubmit: (data: CreateOrderData) => Promise<boolean>;
+  onLookupClient: (clientCnpj: string) => Promise<ClientSummary | null>;
+  onSubmit: (data: CreateOrderWithClientInput) => Promise<boolean>;
 }
 
 function getDefaultFormValues(): CreateOrderInput {
   return {
     clientCnpj: '',
+    companyName: '',
+    clientEmail: '',
     orderDate: new Date().toISOString().slice(0, 10),
     estimatedValue: 0,
     weightInKg: 0,
@@ -29,14 +33,54 @@ export function CreateOrderModal({
   isOpen,
   isSubmitting,
   onClose,
+  onLookupClient,
   onSubmit,
 }: CreateOrderModalProps) {
   const [formValues, setFormValues] = useState<CreateOrderInput>(getDefaultFormValues);
   const [errors, setErrors] = useState<Partial<Record<keyof CreateOrderInput, string>>>({});
+  const [existingClient, setExistingClient] = useState<ClientSummary | null>(null);
+  const [isLookingUpClient, setIsLookingUpClient] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    if (!isValidCnpj(formValues.clientCnpj)) {
+      setExistingClient(null);
+      return;
+    }
+
+    let isCancelled = false;
+    const timeoutId = setTimeout(() => {
+      void (async () => {
+        setIsLookingUpClient(true);
+
+        try {
+          const client = await onLookupClient(formValues.clientCnpj);
+
+          if (!isCancelled) {
+            setExistingClient(client);
+          }
+        } finally {
+          if (!isCancelled) {
+            setIsLookingUpClient(false);
+          }
+        }
+      })();
+    }, 400);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [formValues.clientCnpj, isOpen, onLookupClient]);
 
   if (!isOpen) {
     return null;
   }
+
+  const isNewClient = isValidCnpj(formValues.clientCnpj) && !isLookingUpClient && !existingClient;
 
   const handleClose = () => {
     if (isSubmitting) {
@@ -45,6 +89,7 @@ export function CreateOrderModal({
 
     setFormValues(getDefaultFormValues());
     setErrors({});
+    setExistingClient(null);
     onClose();
   };
 
@@ -68,8 +113,27 @@ export function CreateOrderModal({
       return;
     }
 
+    if (isNewClient) {
+      const fieldErrors: Partial<Record<keyof CreateOrderInput, string>> = {};
+
+      if (!parsed.data.companyName?.trim()) {
+        fieldErrors.companyName = 'Informe o nome da empresa';
+      }
+
+      if (!parsed.data.clientEmail?.trim()) {
+        fieldErrors.clientEmail = 'Informe o e-mail do cliente';
+      }
+
+      if (Object.keys(fieldErrors).length > 0) {
+        setErrors(fieldErrors);
+        return;
+      }
+    }
+
     const success = await onSubmit({
       clientCnpj: formatCnpj(parsed.data.clientCnpj),
+      companyName: parsed.data.companyName,
+      clientEmail: parsed.data.clientEmail,
       orderDate: new Date(`${parsed.data.orderDate}T12:00:00`).toISOString(),
       estimatedValue: parsed.data.estimatedValue,
       weightInKg: parsed.data.weightInKg,
@@ -79,6 +143,7 @@ export function CreateOrderModal({
     if (success) {
       setFormValues(getDefaultFormValues());
       setErrors({});
+      setExistingClient(null);
       onClose();
     }
   };
@@ -123,6 +188,53 @@ export function CreateOrderModal({
             error={errors.clientCnpj}
             disabled={isSubmitting}
           />
+
+          {isLookingUpClient && (
+            <p className="kanban-client-hint">Verificando cadastro do cliente...</p>
+          )}
+
+          {existingClient && (
+            <div className="kanban-client-banner kanban-client-banner--existing">
+              <p className="kanban-client-banner__title">Cliente já cadastrado</p>
+              <p>
+                {existingClient.companyName} · {existingClient.email}
+              </p>
+            </div>
+          )}
+
+          {isNewClient && (
+            <>
+              <div className="kanban-client-banner kanban-client-banner--new">
+                <p className="kanban-client-banner__title">Novo cliente</p>
+                <p>Será criado um acesso ao portal para acompanhar os pedidos.</p>
+              </div>
+
+              <Input
+                label="Nome da empresa"
+                name="companyName"
+                placeholder="Empresa Lda."
+                value={formValues.companyName ?? ''}
+                onChange={(event) =>
+                  setFormValues((current) => ({ ...current, companyName: event.target.value }))
+                }
+                error={errors.companyName}
+                disabled={isSubmitting}
+              />
+
+              <Input
+                label="E-mail do cliente"
+                name="clientEmail"
+                type="email"
+                placeholder="empresa@email.com"
+                value={formValues.clientEmail ?? ''}
+                onChange={(event) =>
+                  setFormValues((current) => ({ ...current, clientEmail: event.target.value }))
+                }
+                error={errors.clientEmail}
+                disabled={isSubmitting}
+              />
+            </>
+          )}
 
           <Input
             label="Data do pedido"
