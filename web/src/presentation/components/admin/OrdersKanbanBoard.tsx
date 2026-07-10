@@ -9,12 +9,14 @@ interface OrdersKanbanBoardProps {
   orders: Order[];
   isMutating: boolean;
   onMoveOrder: (orderId: string, status: OrderStatus) => Promise<boolean>;
+  onOpenOrder: (order: Order) => void;
 }
 
 export function OrdersKanbanBoard({
   orders,
   isMutating,
   onMoveOrder,
+  onOpenOrder,
 }: OrdersKanbanBoardProps) {
   const [draggingOrderId, setDraggingOrderId] = useState<string | null>(null);
   const [dropTargetStatus, setDropTargetStatus] = useState<OrderStatus | null>(null);
@@ -68,6 +70,7 @@ export function OrdersKanbanBoard({
           onDragOver={setDropTargetStatus}
           onDragLeave={() => setDropTargetStatus(null)}
           onDrop={(status) => void handleDrop(status)}
+          onOpenOrder={onOpenOrder}
         />
       ))}
     </div>

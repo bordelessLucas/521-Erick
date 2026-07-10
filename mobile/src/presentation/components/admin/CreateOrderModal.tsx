@@ -106,12 +106,8 @@ export function CreateOrderModal({
     if (isNewClient) {
       const fieldErrors: Partial<Record<keyof CreateOrderInput, string>> = {};
 
-      if (!parsed.data.companyName?.trim()) {
-        fieldErrors.companyName = 'Informe o nome da empresa';
-      }
-
-      if (!parsed.data.clientEmail?.trim()) {
-        fieldErrors.clientEmail = 'Informe o e-mail do cliente';
+      if (parsed.data.companyName && parsed.data.companyName.trim().length < 2) {
+        fieldErrors.companyName = 'Informe um nome com pelo menos 2 caracteres';
       }
 
       if (Object.keys(fieldErrors).length > 0) {
@@ -182,7 +178,7 @@ export function CreateOrderModal({
                   Cliente já cadastrado
                 </AppText>
                 <AppText variant="bodySmall" color={colors.pine}>
-                  {existingClient.companyName} · {existingClient.email}
+                  {existingClient.companyName} · {existingClient.clientCnpj}
                 </AppText>
               </View>
             )}
@@ -194,31 +190,19 @@ export function CreateOrderModal({
                     Novo cliente
                   </AppText>
                   <AppText variant="bodySmall" color={colors.terra}>
-                    Será criado um acesso ao portal para acompanhar os pedidos.
+                    Será criado um acesso ao portal. O cliente entra só com o CNPJ para acompanhar a
+                    timeline do pedido.
                   </AppText>
                 </View>
 
                 <Input
-                  label="Nome da empresa"
+                  label="Nome da empresa (opcional)"
                   placeholder="Empresa Lda."
                   value={formValues.companyName ?? ''}
                   onChangeText={(value) =>
                     setFormValues((current) => ({ ...current, companyName: value }))
                   }
                   error={errors.companyName}
-                  editable={!isSubmitting}
-                />
-
-                <Input
-                  label="E-mail do cliente"
-                  placeholder="empresa@email.com"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  value={formValues.clientEmail ?? ''}
-                  onChangeText={(value) =>
-                    setFormValues((current) => ({ ...current, clientEmail: value }))
-                  }
-                  error={errors.clientEmail}
                   editable={!isSubmitting}
                 />
               </>

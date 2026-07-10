@@ -116,12 +116,8 @@ export function CreateOrderModal({
     if (isNewClient) {
       const fieldErrors: Partial<Record<keyof CreateOrderInput, string>> = {};
 
-      if (!parsed.data.companyName?.trim()) {
-        fieldErrors.companyName = 'Informe o nome da empresa';
-      }
-
-      if (!parsed.data.clientEmail?.trim()) {
-        fieldErrors.clientEmail = 'Informe o e-mail do cliente';
+      if (parsed.data.companyName && parsed.data.companyName.trim().length < 2) {
+        fieldErrors.companyName = 'Informe um nome com pelo menos 2 caracteres';
       }
 
       if (Object.keys(fieldErrors).length > 0) {
@@ -197,7 +193,7 @@ export function CreateOrderModal({
             <div className="kanban-client-banner kanban-client-banner--existing">
               <p className="kanban-client-banner__title">Cliente já cadastrado</p>
               <p>
-                {existingClient.companyName} · {existingClient.email}
+                {existingClient.companyName} · {existingClient.clientCnpj}
               </p>
             </div>
           )}
@@ -206,11 +202,14 @@ export function CreateOrderModal({
             <>
               <div className="kanban-client-banner kanban-client-banner--new">
                 <p className="kanban-client-banner__title">Novo cliente</p>
-                <p>Será criado um acesso ao portal para acompanhar os pedidos.</p>
+                <p>
+                  Será criado um acesso ao portal. O cliente entra só com o CNPJ para acompanhar a
+                  timeline do pedido.
+                </p>
               </div>
 
               <Input
-                label="Nome da empresa"
+                label="Nome da empresa (opcional)"
                 name="companyName"
                 placeholder="Empresa Lda."
                 value={formValues.companyName ?? ''}
@@ -218,19 +217,6 @@ export function CreateOrderModal({
                   setFormValues((current) => ({ ...current, companyName: event.target.value }))
                 }
                 error={errors.companyName}
-                disabled={isSubmitting}
-              />
-
-              <Input
-                label="E-mail do cliente"
-                name="clientEmail"
-                type="email"
-                placeholder="empresa@email.com"
-                value={formValues.clientEmail ?? ''}
-                onChange={(event) =>
-                  setFormValues((current) => ({ ...current, clientEmail: event.target.value }))
-                }
-                error={errors.clientEmail}
                 disabled={isSubmitting}
               />
             </>

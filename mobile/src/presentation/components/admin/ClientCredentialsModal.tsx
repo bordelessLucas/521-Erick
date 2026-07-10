@@ -15,10 +15,8 @@ function buildCredentialsMessage(credentials: ClientAccessCredentials): string {
     'Acesso ao portal Trançatto',
     `Empresa: ${credentials.companyName}`,
     `CNPJ: ${credentials.clientCnpj}`,
-    `E-mail: ${credentials.email}`,
-    `Senha temporária: ${credentials.password}`,
     '',
-    'O cliente pode entrar no web e no mobile com estas credenciais.',
+    'O cliente entra no portal somente com o CNPJ para acompanhar a timeline dos pedidos.',
   ].join('\n');
 }
 
@@ -59,15 +57,13 @@ export function ClientCredentialsModal({
 
           <View style={styles.content}>
             <AppText variant="bodySmall" color={colors.muted}>
-              Envie estas credenciais para o cliente. Ele poderá acessar o portal no web e no
-              mobile e acompanhar os pedidos pela timeline.
+              O cliente já pode acessar o portal no web e no mobile usando apenas o CNPJ para
+              acompanhar a timeline dos pedidos.
             </AppText>
 
             <View style={styles.list}>
               <CredentialItem label="Empresa" value={credentials.companyName} />
-              <CredentialItem label="CNPJ" value={credentials.clientCnpj} />
-              <CredentialItem label="E-mail" value={credentials.email} />
-              <CredentialItem label="Senha temporária" value={credentials.password} mono />
+              <CredentialItem label="CNPJ de acesso" value={credentials.clientCnpj} mono />
             </View>
           </View>
 

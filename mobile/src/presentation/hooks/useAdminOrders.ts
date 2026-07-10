@@ -70,7 +70,14 @@ export function useAdminOrders(): UseAdminOrdersReturn {
       return null;
     }
 
-    return container.getClientRepository().findByCnpj(formatCnpj(normalizeCnpj(clientCnpj)));
+    try {
+      return await container
+        .getClientRepository()
+        .findByCnpj(formatCnpj(normalizeCnpj(clientCnpj)));
+    } catch (err) {
+      setError(resolveAdminOrdersError(err));
+      return null;
+    }
   }, []);
 
   const createOrder = useCallback(

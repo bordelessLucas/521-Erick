@@ -1,8 +1,8 @@
 import type { ClientAccessCredentials, ClientSummary } from '@/domain/entities/Client';
 
 export interface ProvisionClientInput {
-  companyName: string;
-  clientEmail: string;
+  companyName?: string;
+  clientEmail?: string;
   clientCnpj: string;
 }
 

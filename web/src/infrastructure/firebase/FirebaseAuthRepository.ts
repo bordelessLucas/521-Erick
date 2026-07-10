@@ -39,10 +39,11 @@ export class FirebaseAuthRepository implements IAuthRepository {
   async signIn(credentials: SignInCredentials): Promise<User> {
     try {
       const email = resolveAuthEmail(credentials.identifier);
+      const password = credentials.password ?? '';
       const { user } = await signInWithEmailAndPassword(
         getFirebaseAuth(),
         email,
-        credentials.password,
+        password,
       );
       return mapFirebaseUser(user);
     } catch (error) {

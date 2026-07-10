@@ -14,6 +14,7 @@ interface KanbanColumnProps {
   onDragOver: (status: OrderStatus) => void;
   onDragLeave: () => void;
   onDrop: (status: OrderStatus) => void;
+  onOpenOrder: (order: Order) => void;
 }
 
 export function KanbanColumn({
@@ -27,6 +28,7 @@ export function KanbanColumn({
   onDragOver,
   onDragLeave,
   onDrop,
+  onOpenOrder,
 }: KanbanColumnProps) {
   return (
     <section
@@ -57,6 +59,7 @@ export function KanbanColumn({
               isDragging={draggingOrderId === order.id}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
+              onOpen={onOpenOrder}
             />
           ))
         )}

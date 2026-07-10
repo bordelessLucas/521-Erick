@@ -17,10 +17,8 @@ export function ClientCredentialsModal({ credentials, onClose }: ClientCredentia
       'Acesso ao portal Trançatto',
       `Empresa: ${credentials.companyName}`,
       `CNPJ: ${credentials.clientCnpj}`,
-      `E-mail: ${credentials.email}`,
-      `Senha temporária: ${credentials.password}`,
       '',
-      'O cliente pode entrar no web e no mobile com estas credenciais.',
+      'O cliente entra no portal somente com o CNPJ para acompanhar a timeline dos pedidos.',
     ].join('\n');
 
     try {
@@ -56,8 +54,8 @@ export function ClientCredentialsModal({ credentials, onClose }: ClientCredentia
 
         <div className="kanban-modal__form">
           <p className="kanban-credentials__intro">
-            Envie estas credenciais para o cliente. Ele poderá acessar o portal no web e no mobile
-            e acompanhar os pedidos pela timeline.
+            O cliente já pode acessar o portal no web e no mobile usando apenas o CNPJ para
+            acompanhar a timeline dos pedidos.
           </p>
 
           <dl className="kanban-credentials__list">
@@ -66,22 +64,14 @@ export function ClientCredentialsModal({ credentials, onClose }: ClientCredentia
               <dd>{credentials.companyName}</dd>
             </div>
             <div>
-              <dt>CNPJ</dt>
-              <dd>{credentials.clientCnpj}</dd>
-            </div>
-            <div>
-              <dt>E-mail</dt>
-              <dd>{credentials.email}</dd>
-            </div>
-            <div>
-              <dt>Senha temporária</dt>
-              <dd className="kanban-credentials__password">{credentials.password}</dd>
+              <dt>CNPJ de acesso</dt>
+              <dd className="kanban-credentials__password">{credentials.clientCnpj}</dd>
             </div>
           </dl>
 
           <footer className="kanban-modal__footer">
             <button type="button" className="kanban-modal__secondary" onClick={() => void handleCopy()}>
-              Copiar credenciais
+              Copiar acesso
             </button>
             <button type="button" className="kanban-modal__primary" onClick={onClose}>
               Entendi

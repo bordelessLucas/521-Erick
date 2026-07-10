@@ -12,4 +12,11 @@ export const FIRESTORE_COLLECTIONS = {
   users: 'users',
 } as const;
 
-export const DEMO_CLIENT_CNPJ = '12.345.678/0001-90';
+/** CNPJ do Erick — ao informar na tela de login, libera o acesso admin. */
+export const ADMIN_GATE_CNPJ = '12.345.678/0001-90';
+
+export const DEMO_CLIENT_CNPJ = ADMIN_GATE_CNPJ;
+
+/** Credenciais padrão do painel admin (acesso via CNPJ do Erick). */
+export const ADMIN_DEFAULT_EMAIL = 'admin@admin.com';
+export const ADMIN_DEFAULT_PASSWORD = '12345678';

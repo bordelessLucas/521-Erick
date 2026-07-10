@@ -14,6 +14,14 @@
       "fields": [
         { "fieldPath": "clientCnpj", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "agent_order_links",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "externalSystem", "order": "ASCENDING" },
+        { "fieldPath": "externalOrderId", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

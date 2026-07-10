@@ -93,8 +93,15 @@ export function useAdminOrders(): UseAdminOrdersReturn {
       return null;
     }
 
-    const { container } = await import('@/infrastructure/di/container');
-    return container.getClientRepository().findByCnpj(formatCnpj(normalizeCnpj(clientCnpj)));
+    try {
+      const { container } = await import('@/infrastructure/di/container');
+      return await container
+        .getClientRepository()
+        .findByCnpj(formatCnpj(normalizeCnpj(clientCnpj)));
+    } catch (err) {
+      setError(resolveAdminOrdersError(err));
+      return null;
+    }
   }, []);
 
   const createOrder = useCallback(

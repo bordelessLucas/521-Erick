@@ -1,4 +1,4 @@
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getFirestoreDb } from '@/core/config/firebase';
 import { DEMO_CLIENT_CNPJ, FIRESTORE_COLLECTIONS } from '@/core/config/firebaseConstants';
 import { formatCnpj, normalizeCnpj } from '@/domain/utils/cnpj';
@@ -48,16 +48,32 @@ export async function getCurrentUserClientCnpj(): Promise<string> {
 }
 
 export async function isCurrentUserAdmin(): Promise<boolean> {
+  const currentUser = await requireFirebaseAuthSession();
   const profile = await getCurrentUserProfile();
 
   if (profile?.role === 'admin') {
     return true;
   }
 
-  const currentUser = await requireFirebaseAuthSession();
   const email = currentUser.email ?? '';
+  if (!isAdminEmail(email)) {
+    return false;
+  }
 
-  return isAdminEmail(email);
+  // Garante role admin no Firestore para as security rules funcionarem.
+  await setDoc(
+    doc(getFirestoreDb(), FIRESTORE_COLLECTIONS.users, currentUser.uid),
+    {
+      email,
+      companyName: profile?.companyName ?? 'Administrador',
+      clientCnpj: profile?.clientCnpj ?? '',
+      createdAt: profile?.createdAt ?? new Date().toISOString(),
+      role: 'admin',
+    },
+    { merge: true },
+  );
+
+  return true;
 }
 
 export async function resolvePostAuthRedirect(): Promise<'/admin' | '/dashboard'> {

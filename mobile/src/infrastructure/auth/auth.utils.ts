@@ -1,4 +1,6 @@
 import { FirebaseError } from 'firebase/app';
+import { isValidCnpj } from '@/domain/utils/cnpj';
+import { buildClientAuthEmail } from '@/domain/utils/clientAuthIdentity';
 
 export type AuthErrorCode =
   | 'INVALID_CREDENTIALS'
@@ -18,14 +20,17 @@ export class AuthError extends Error {
 }
 
 export function resolveAuthEmail(identifier: string): string {
-  if (identifier.includes('@')) {
-    return identifier.trim().toLowerCase();
+  const trimmed = identifier.trim();
+
+  if (trimmed.includes('@')) {
+    return trimmed.toLowerCase();
   }
 
-  throw new AuthError(
-    'Autenticação por CNPJ será activada em breve. Utilize o seu e-mail corporativo.',
-    'CNPJ_NOT_SUPPORTED',
-  );
+  if (!isValidCnpj(trimmed)) {
+    throw new AuthError('Introduza um CNPJ ou e-mail válido.', 'UNKNOWN');
+  }
+
+  return buildClientAuthEmail(trimmed);
 }
 
 export function mapFirebaseAuthError(error: unknown): AuthError {
@@ -46,7 +51,7 @@ export function mapFirebaseAuthError(error: unknown): AuthError {
     case 'auth/wrong-password':
     case 'auth/user-not-found':
       return new AuthError(
-        'Credenciais inválidas. Verifique o e-mail e a palavra-passe.',
+        'Credenciais inválidas. Verifique o CNPJ ou o e-mail e a palavra-passe.',
         'INVALID_CREDENTIALS',
       );
     default:

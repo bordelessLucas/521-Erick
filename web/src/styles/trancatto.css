@@ -132,12 +132,32 @@
 }
 
 .trancatto-page .nav a {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.2rem;
   opacity: 0.9;
   transition: opacity 0.2s ease;
 }
 
+.trancatto-page .nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.25s ease;
+}
+
 .trancatto-page .nav a:hover {
   opacity: 1;
+}
+
+.trancatto-page .nav a:hover::after {
+  transform: scaleX(1);
 }
 
 .trancatto-page .nav-login {
@@ -564,63 +584,56 @@
 .trancatto-page .gallery-wide img { aspect-ratio: 16 / 9; }
 .trancatto-page .gallery-tall img { aspect-ratio: 3 / 4; }
 
-/* Palette — 2 colunas */
+/* Palette — título à esquerda, swatches à direita */
 .trancatto-page .palette {
   display: grid;
-  grid-template-columns: 1fr 1.3fr;
-  gap: clamp(2rem, 5vw, 4rem);
-  align-items: start;
+  grid-template-columns: minmax(16rem, 0.85fr) minmax(0, 1.35fr);
+  gap: clamp(2.5rem, 6vw, 5.5rem);
+  align-items: center;
   background: var(--cream);
+  padding-block: clamp(5rem, 10vw, 8rem);
 }
 
 .trancatto-page .palette-title h2 {
-  margin-top: 0.85rem;
-  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
-  font-weight: 500;
-  max-width: 12ch;
-  line-height: 1.02;
+  margin: 0.9rem 0 0;
+  font-family: Manrope, 'DM Sans', sans-serif;
+  font-size: clamp(2.4rem, 4.8vw, 3.85rem);
+  font-weight: 300;
+  max-width: 11ch;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
 }
 
 .trancatto-page .swatches {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 2vw, 2rem);
-  padding-top: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.75rem, 3.5vw, 2.75rem) clamp(1.25rem, 3vw, 2.5rem);
+  justify-items: center;
 }
 
 .trancatto-page .swatches > div {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.85rem;
   justify-items: center;
   text-align: center;
+  width: 100%;
+  max-width: 10.5rem;
 }
 
 .trancatto-page .swatches i {
   display: block;
   width: 100%;
-  max-width: 9rem;
   aspect-ratio: 1;
-  border-radius: 999px;
+  border-radius: 50%;
   background: var(--c);
 }
 
 .trancatto-page .swatches span {
-  font-size: 0.62rem;
+  font-size: 0.625rem;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--label);
-}
-
-.trancatto-page .palette-note {
-  grid-column: 1 / -1;
-  text-align: center;
-  max-width: 36rem;
-  margin: 0 auto;
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.65;
-  padding-top: 1rem;
 }
 
 /* CTA */
@@ -629,48 +642,55 @@
   overflow: hidden;
   color: #fff;
   text-align: center;
+  min-height: min(100svh, 920px);
+  display: grid;
+  align-items: center;
 }
 
 .trancatto-page .cta-bg {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(rgba(10, 34, 27, 0.78), rgba(10, 34, 27, 0.86)),
+    linear-gradient(rgba(12, 28, 22, 0.72), rgba(10, 24, 18, 0.82)),
     url('/images/trancatto/asset-10.jpeg') center / cover no-repeat;
+  filter: none;
 }
 
 .trancatto-page .cta-content {
   position: relative;
   z-index: 1;
-  max-width: 44rem;
+  width: 100%;
+  max-width: 40rem;
   margin-inline: auto;
-  padding: clamp(5rem, 12vw, 8rem) clamp(1.5rem, 5vw, 5rem);
+  padding: clamp(5.5rem, 12vw, 8.5rem) clamp(1.5rem, 5vw, 5rem);
 }
 
 .trancatto-page .cta-content .eyebrow {
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: 0.18em;
 }
 
 .trancatto-page .cta-content h2 {
-  margin: 0.85rem 0 1rem;
-  font-size: clamp(2.2rem, 5vw, 3.8rem);
-  font-weight: 500;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  margin: 1rem 0 1.15rem;
+  font-family: Manrope, 'DM Sans', sans-serif;
+  font-size: clamp(2.6rem, 6.5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
 }
 
 .trancatto-page .cta-content > p {
-  color: rgba(255, 255, 255, 0.82);
-  margin: 0 auto 2.5rem;
-  max-width: 32rem;
+  color: rgba(255, 255, 255, 0.86);
+  margin: 0 auto 2.75rem;
+  max-width: 28rem;
   font-size: 0.95rem;
   line-height: 1.7;
 }
 
 .trancatto-page .contact-form {
   display: grid;
-  gap: 1rem;
-  max-width: 36rem;
+  gap: 1.15rem;
+  max-width: 34rem;
   margin-inline: auto;
   text-align: left;
 }
@@ -678,57 +698,58 @@
 .trancatto-page .contact-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 1.15rem;
 }
 
 .trancatto-page .contact-form label {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
 .trancatto-page .contact-form label span {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .trancatto-page .contact-form input {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 0;
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, 0.28);
   color: #fff;
-  padding: 0.95rem 1rem;
+  padding: 1.05rem 1.1rem;
   font: inherit;
   font-size: 0.92rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .trancatto-page .contact-form input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.42);
 }
 
 .trancatto-page .contact-form input:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.85);
-  background: rgba(0, 0, 0, 0.32);
+  border-color: #fff;
+  background: rgba(0, 0, 0, 0.38);
 }
 
 .trancatto-page .button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   width: 100%;
-  margin-top: 0.5rem;
-  padding: 1rem 1.5rem;
+  margin-top: 0.35rem;
+  padding: 1.1rem 1.5rem;
   border: 0;
   border-radius: 0;
   background: #fff;
-  color: var(--pine);
+  color: #111;
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
@@ -736,7 +757,12 @@
 
 .trancatto-page .button:hover {
   background: #f0ede6;
-  color: var(--ink);
+  color: #111;
+}
+
+.trancatto-page .button span {
+  font-size: 1.05em;
+  line-height: 1;
 }
 
 /* Footer */
@@ -804,14 +830,16 @@
   right: 1.25rem;
   bottom: 1.25rem;
   z-index: 90;
-  display: grid;
-  place-items: center;
-  width: 3.25rem;
-  height: 3.25rem;
-  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
   background: #25d366;
   color: #fff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  line-height: 0;
+  box-shadow: none;
   transition: transform 0.2s ease;
 }
 
@@ -820,8 +848,10 @@
 }
 
 .trancatto-page .whatsapp svg {
-  width: 1.5rem;
-  height: 1.5rem;
+  display: block;
+  width: 1.7rem;
+  height: 1.7rem;
+  flex-shrink: 0;
 }
 
 /* Responsive */
@@ -830,6 +860,15 @@
   .trancatto-page .feature,
   .trancatto-page .palette {
     grid-template-columns: 1fr;
+  }
+
+  .trancatto-page .palette {
+    gap: 2.75rem;
+    align-items: start;
+  }
+
+  .trancatto-page .swatches {
+    justify-self: stretch;
   }
 
   .trancatto-page .products {
@@ -950,9 +989,22 @@
   }
 
   .trancatto-page .numbers,
-  .trancatto-page .swatches,
   .trancatto-page footer {
     grid-template-columns: 1fr;
+  }
+
+  .trancatto-page .swatches {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem 0.75rem;
+  }
+
+  .trancatto-page .swatches > div {
+    max-width: 6.5rem;
+  }
+
+  .trancatto-page .palette-title h2 {
+    max-width: none;
+    font-size: clamp(2.1rem, 9vw, 2.8rem);
   }
 
   .trancatto-page .numbers > div {
@@ -1739,8 +1791,12 @@
   padding: 0.8rem;
   background: #fff;
   border: 1px solid var(--line);
-  cursor: grab;
+  cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.kanban-card:active {
+  cursor: grabbing;
 }
 
 .kanban-card:hover {
@@ -1826,6 +1882,10 @@
   box-shadow: 0 24px 60px rgba(15, 20, 18, 0.18);
 }
 
+.kanban-modal__dialog--details {
+  width: min(100%, 44rem);
+}
+
 .kanban-modal__header {
   display: flex;
   align-items: flex-start;
@@ -1840,6 +1900,7 @@
   font-size: 1.5rem;
   font-weight: 400;
   letter-spacing: -0.03em;
+  word-break: break-all;
 }
 
 .kanban-modal__close {
@@ -1850,6 +1911,28 @@
   line-height: 1;
   cursor: pointer;
   padding: 0.15rem 0.35rem;
+}
+
+.kanban-modal__body {
+  padding: 1.25rem;
+}
+
+.kanban-modal__dialog--details .order-tracking-panel {
+  border: 0;
+  padding: 0;
+}
+
+.kanban-modal__details-footer {
+  display: grid;
+  gap: 1rem;
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.15rem;
+}
+
+.kanban-modal__details-footer .kanban-modal__select-label {
+  display: grid;
+  gap: 0.45rem;
 }
 
 .kanban-modal__form {

@@ -2,7 +2,7 @@ import { User } from '../entities/User';
 
 export interface SignInCredentials {
   identifier: string;
-  password: string;
+  password?: string;
 }
 
 export interface SignUpCredentials {

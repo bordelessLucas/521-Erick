@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import type { Order } from '@/domain/entities/Order';
 import type { ClientAccessCredentials } from '@/domain/entities/Client';
 import { useAdminOrders } from '@/presentation/hooks/useAdminOrders';
 import { ClientCredentialsModal } from './ClientCredentialsModal';
 import { CreateOrderModal } from './CreateOrderModal';
+import { OrderDetailsModal } from './OrderDetailsModal';
 import { OrdersKanbanBoard } from './OrdersKanbanBoard';
 
 export function OrdersKanbanContainer() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [newClientCredentials, setNewClientCredentials] =
     useState<ClientAccessCredentials | null>(null);
   const {
@@ -20,6 +23,10 @@ export function OrdersKanbanContainer() {
     createOrder,
     updateOrderStatus,
   } = useAdminOrders();
+
+  const displayedOrder = selectedOrder
+    ? (orders.find((order) => order.id === selectedOrder.id) ?? selectedOrder)
+    : null;
 
   if (isLoading) {
     return (
@@ -56,6 +63,15 @@ export function OrdersKanbanContainer() {
       <OrdersKanbanBoard
         orders={orders}
         isMutating={isMutating}
+        onMoveOrder={updateOrderStatus}
+        onOpenOrder={setSelectedOrder}
+      />
+
+      <OrderDetailsModal
+        order={displayedOrder}
+        isOpen={displayedOrder !== null}
+        isUpdating={isMutating}
+        onClose={() => setSelectedOrder(null)}
         onMoveOrder={updateOrderStatus}
       />
 
