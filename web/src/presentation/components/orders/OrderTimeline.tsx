@@ -3,11 +3,10 @@
 import type { OrderStatus } from '@/domain/entities/Order';
 import { cn } from '@/core/utils/cn';
 import {
-  ORDER_TIMELINE_STEPS,
-  getActiveStepIndex,
   getStepState,
   type TimelineStepState,
 } from './orderTimelineSteps';
+import { usePipelineStages } from '@/presentation/contexts/PipelineStagesContext';
 
 interface OrderTimelineProps {
   status: OrderStatus;
@@ -42,21 +41,24 @@ function StepMarker({ state }: { state: TimelineStepState }) {
 }
 
 export function OrderTimeline({ status, variant = 'horizontal' }: OrderTimelineProps) {
-  const activeIndex = getActiveStepIndex(status);
-  const isFullyComplete = status === ORDER_TIMELINE_STEPS.at(-1)?.status;
+  const { stages } = usePipelineStages();
+  
+  const activeIndex = stages.findIndex((step) => step.id === status);
+  const normalizedActiveIndex = activeIndex >= 0 ? activeIndex : 0;
+  const isFullyComplete = status === stages.at(-1)?.id;
 
   return (
     <ol
       className={cn('order-timeline', variant === 'vertical' && 'order-timeline--vertical')}
       aria-label="Progresso do pedido"
     >
-      {ORDER_TIMELINE_STEPS.map((step, index) => {
-        const state = getStepState(index, activeIndex, isFullyComplete);
-        const isLast = index === ORDER_TIMELINE_STEPS.length - 1;
+      {stages.map((step, index) => {
+        const state = getStepState(index, normalizedActiveIndex, isFullyComplete);
+        const isLast = index === stages.length - 1;
 
         return (
           <li
-            key={step.status}
+            key={step.id}
             className={cn(
               'order-timeline__step',
               `order-timeline__step--${state}`,
@@ -68,11 +70,10 @@ export function OrderTimeline({ status, variant = 'horizontal' }: OrderTimelineP
               {!isLast && <span className="order-timeline__line" aria-hidden="true" />}
             </div>
             <div className="order-timeline__content">
-              <p className="order-timeline__label">{step.label}</p>
+              <p className="order-timeline__label">
+                {variant === 'horizontal' ? step.shortLabel : step.label}
+              </p>
               {variant === 'vertical' && (
-                <p className="order-timeline__description">{step.description}</p>
-              )}
-              {state === 'current' && variant === 'horizontal' && (
                 <p className="order-timeline__description">{step.description}</p>
               )}
             </div>

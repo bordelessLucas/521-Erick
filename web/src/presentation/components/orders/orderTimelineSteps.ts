@@ -1,4 +1,4 @@
-import { OrderStatus } from '@/domain/entities/Order';
+import { OrderStatus, DefaultOrderStatuses } from '@/domain/entities/Order';
 
 export interface OrderTimelineStep {
   status: OrderStatus;
@@ -9,37 +9,37 @@ export interface OrderTimelineStep {
 
 export const ORDER_TIMELINE_STEPS: OrderTimelineStep[] = [
   {
-    status: OrderStatus.AGUARDANDO_APROVACAO,
+    status: DefaultOrderStatuses.AGUARDANDO_APROVACAO,
     label: 'Aguardando aprovação',
     shortLabel: 'Aprovação',
     description: 'Seu pedido foi recebido e aguarda validação comercial.',
   },
   {
-    status: OrderStatus.APROVADO,
+    status: DefaultOrderStatuses.APROVADO,
     label: 'Pedido aprovado',
     shortLabel: 'Aprovado',
     description: 'O pedido foi confirmado e entrou na fila de produção.',
   },
   {
-    status: OrderStatus.ORDEM_DE_ROLINHO,
+    status: DefaultOrderStatuses.ORDEM_DE_ROLINHO,
     label: 'Ordem de rolinho',
     shortLabel: 'Rolinho',
     description: 'A ordem de rolinho foi emitida para a fábrica.',
   },
   {
-    status: OrderStatus.SEPARACAO,
+    status: DefaultOrderStatuses.SEPARACAO,
     label: 'Separação',
     shortLabel: 'Separação',
     description: 'Materiais e insumos estão sendo separados.',
   },
   {
-    status: OrderStatus.PRODUCAO,
+    status: DefaultOrderStatuses.PRODUCAO,
     label: 'Em produção',
     shortLabel: 'Produção',
     description: 'Seu pedido está sendo produzido na fábrica.',
   },
   {
-    status: OrderStatus.FATURADO,
+    status: DefaultOrderStatuses.FATURADO,
     label: 'Faturado',
     shortLabel: 'Faturado',
     description: 'Pedido concluído e faturado com sucesso.',

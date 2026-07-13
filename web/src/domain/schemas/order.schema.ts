@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { OrderStatus } from '@/domain/entities/Order';
+import { DefaultOrderStatuses } from '@/domain/entities/Order';
 import { isValidCnpj } from '@/domain/utils/cnpj';
 
 export const createOrderSchema = z.object({
@@ -23,7 +23,7 @@ export const createOrderSchema = z.object({
   weightInKg: z.coerce
     .number({ error: 'Informe um peso válido' })
     .positive('O peso deve ser maior que zero'),
-  status: z.nativeEnum(OrderStatus).default(OrderStatus.AGUARDANDO_APROVACAO),
+  status: z.string().default(DefaultOrderStatuses.AGUARDANDO_APROVACAO),
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;

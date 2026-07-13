@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { Order, OrderStatus } from '@/domain/entities/Order';
 import { OrderTrackingPanel } from '@/presentation/components/orders/OrderTrackingPanel';
-import { ORDER_TIMELINE_STEPS } from '@/presentation/components/orders/orderTimelineSteps';
+import { usePipelineStages } from '@/presentation/contexts/PipelineStagesContext';
 
 interface OrderDetailsModalProps {
   order: Order | null;
@@ -21,6 +21,7 @@ export function OrderDetailsModal({
   onMoveOrder,
 }: OrderDetailsModalProps) {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | null>(null);
+  const { stages } = usePipelineStages();
 
   useEffect(() => {
     if (order) {
@@ -104,8 +105,8 @@ export function OrderDetailsModal({
               disabled={isUpdating}
               onChange={(event) => setSelectedStatus(event.target.value as OrderStatus)}
             >
-              {ORDER_TIMELINE_STEPS.map((step) => (
-                <option key={step.status} value={step.status}>
+              {stages.map((step) => (
+                <option key={step.id} value={step.id}>
                   {step.label}
                 </option>
               ))}

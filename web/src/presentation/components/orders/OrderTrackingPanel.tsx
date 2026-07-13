@@ -3,7 +3,7 @@
 import type { Order } from '@/domain/entities/Order';
 import { formatCurrency, formatDate, formatWeight } from '@/core/utils/format';
 import { OrderTimeline } from './OrderTimeline';
-import { getOrderStatusHeadline, getOrderStatusTitle } from './orderTimelineSteps';
+import { usePipelineStages } from '@/presentation/contexts/PipelineStagesContext';
 import { orderStatusConfig } from './orderStatusConfig';
 
 interface OrderTrackingPanelProps {
@@ -11,9 +11,12 @@ interface OrderTrackingPanelProps {
 }
 
 export function OrderTrackingPanel({ order }: OrderTrackingPanelProps) {
-  const statusTitle = getOrderStatusTitle(order.status);
-  const statusHeadline = getOrderStatusHeadline(order.status);
-  const statusLabel = orderStatusConfig[order.status].label;
+  const { stages } = usePipelineStages();
+  
+  const currentStage = stages.find((s) => s.id === order.status) ?? stages[0];
+  const statusTitle = currentStage?.label ?? 'Em andamento';
+  const statusHeadline = currentStage?.description ?? 'Acompanhe o andamento do seu pedido.';
+  const statusLabel = orderStatusConfig[order.status]?.label ?? statusTitle;
 
   return (
     <article className="order-tracking-panel">

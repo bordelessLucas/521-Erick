@@ -8,9 +8,11 @@ import { ClientCredentialsModal } from './ClientCredentialsModal';
 import { CreateOrderModal } from './CreateOrderModal';
 import { OrderDetailsModal } from './OrderDetailsModal';
 import { OrdersKanbanBoard } from './OrdersKanbanBoard';
+import { ManageStagesModal } from './ManageStagesModal';
 
 export function OrdersKanbanContainer() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isManageStagesModalOpen, setIsManageStagesModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [newClientCredentials, setNewClientCredentials] =
     useState<ClientAccessCredentials | null>(null);
@@ -45,13 +47,22 @@ export function OrdersKanbanContainer() {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="kanban-toolbar__action"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          + Novo pedido
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="kanban-toolbar__action bg-neutral-200 text-neutral-800 hover:bg-neutral-300 mr-2 px-3 py-2 rounded font-medium text-sm transition-colors"
+            onClick={() => setIsManageStagesModalOpen(true)}
+          >
+            Gerenciar Etapas
+          </button>
+          <button
+            type="button"
+            className="kanban-toolbar__action"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            + Novo pedido
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -94,6 +105,11 @@ export function OrdersKanbanContainer() {
       <ClientCredentialsModal
         credentials={newClientCredentials}
         onClose={() => setNewClientCredentials(null)}
+      />
+
+      <ManageStagesModal
+        isOpen={isManageStagesModalOpen}
+        onClose={() => setIsManageStagesModalOpen(false)}
       />
     </div>
   );

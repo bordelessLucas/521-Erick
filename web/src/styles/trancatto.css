@@ -229,8 +229,9 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(8, 24, 19, 0.72) 0%, rgba(8, 24, 19, 0.18) 62%, rgba(8, 24, 19, 0.3)),
-    linear-gradient(0deg, rgba(8, 24, 19, 0.5), transparent 45%);
+    linear-gradient(180deg, rgba(8, 24, 19, 0.8) 0%, transparent 20%),
+    linear-gradient(90deg, rgba(8, 24, 19, 0.85) 0%, rgba(8, 24, 19, 0.4) 62%, rgba(8, 24, 19, 0.5)),
+    linear-gradient(0deg, rgba(8, 24, 19, 0.6), transparent 45%);
 }
 
 .trancatto-page .hero-content {

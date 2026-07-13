@@ -1,30 +1,30 @@
-import { OrderStatus } from '@/domain/entities/Order';
+import { OrderStatus, DefaultOrderStatuses } from '@/domain/entities/Order';
 
 /**
  * Mapa inicial de status externos → Kanban Trançatto.
  * Ampliar quando o Erick documentar os status do sistema dele.
  */
 const EXTERNAL_STATUS_ALIASES: Record<string, OrderStatus> = {
-  aguardando: OrderStatus.AGUARDANDO_APROVACAO,
-  aguardando_aprovacao: OrderStatus.AGUARDANDO_APROVACAO,
-  pendente: OrderStatus.AGUARDANDO_APROVACAO,
-  aprovado: OrderStatus.APROVADO,
-  aprovacao: OrderStatus.APROVADO,
-  rolinho: OrderStatus.ORDEM_DE_ROLINHO,
-  ordem_de_rolinho: OrderStatus.ORDEM_DE_ROLINHO,
-  separacao: OrderStatus.SEPARACAO,
-  separação: OrderStatus.SEPARACAO,
-  producao: OrderStatus.PRODUCAO,
-  produção: OrderStatus.PRODUCAO,
-  em_producao: OrderStatus.PRODUCAO,
-  faturado: OrderStatus.FATURADO,
-  concluido: OrderStatus.FATURADO,
-  concluído: OrderStatus.FATURADO,
+  aguardando: DefaultOrderStatuses.AGUARDANDO_APROVACAO,
+  aguardando_aprovacao: DefaultOrderStatuses.AGUARDANDO_APROVACAO,
+  pendente: DefaultOrderStatuses.AGUARDANDO_APROVACAO,
+  aprovado: DefaultOrderStatuses.APROVADO,
+  aprovacao: DefaultOrderStatuses.APROVADO,
+  rolinho: DefaultOrderStatuses.ORDEM_DE_ROLINHO,
+  ordem_de_rolinho: DefaultOrderStatuses.ORDEM_DE_ROLINHO,
+  separacao: DefaultOrderStatuses.SEPARACAO,
+  separação: DefaultOrderStatuses.SEPARACAO,
+  producao: DefaultOrderStatuses.PRODUCAO,
+  produção: DefaultOrderStatuses.PRODUCAO,
+  em_producao: DefaultOrderStatuses.PRODUCAO,
+  faturado: DefaultOrderStatuses.FATURADO,
+  concluido: DefaultOrderStatuses.FATURADO,
+  concluído: DefaultOrderStatuses.FATURADO,
 };
 
 export function mapExternalStatusToOrderStatus(
   externalStatus: string | undefined,
-  fallback: OrderStatus = OrderStatus.AGUARDANDO_APROVACAO,
+  fallback: OrderStatus = DefaultOrderStatuses.AGUARDANDO_APROVACAO,
 ): OrderStatus {
   if (!externalStatus?.trim()) {
     return fallback;
@@ -37,7 +37,7 @@ export function mapExternalStatusToOrderStatus(
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[\s-]+/g, '_');
 
-  if (normalized in OrderStatus) {
+  if (normalized in DefaultOrderStatuses) {
     return normalized as OrderStatus;
   }
 

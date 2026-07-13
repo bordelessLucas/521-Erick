@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import type { Order, OrderStatus } from '@/domain/entities/Order';
-import { ORDER_TIMELINE_STEPS } from '@/presentation/components/orders/orderTimelineSteps';
+import { usePipelineStages } from '@/presentation/contexts/PipelineStagesContext';
 import { KanbanColumn } from './KanbanColumn';
 
 interface OrdersKanbanBoardProps {
@@ -20,10 +20,11 @@ export function OrdersKanbanBoard({
 }: OrdersKanbanBoardProps) {
   const [draggingOrderId, setDraggingOrderId] = useState<string | null>(null);
   const [dropTargetStatus, setDropTargetStatus] = useState<OrderStatus | null>(null);
+  const { stages } = usePipelineStages();
 
   const ordersByStatus = useMemo(() => {
     const grouped = Object.fromEntries(
-      ORDER_TIMELINE_STEPS.map((step) => [step.status, [] as Order[]]),
+      stages.map((step) => [step.id, [] as Order[]]),
     ) as Record<OrderStatus, Order[]>;
 
     for (const order of orders) {
@@ -31,7 +32,7 @@ export function OrdersKanbanBoard({
     }
 
     return grouped;
-  }, [orders]);
+  }, [orders, stages]);
 
   const handleDrop = async (status: OrderStatus) => {
     const orderId = draggingOrderId;
@@ -54,14 +55,14 @@ export function OrdersKanbanBoard({
 
   return (
     <div className={`kanban-board${isMutating ? ' kanban-board--busy' : ''}`}>
-      {ORDER_TIMELINE_STEPS.map((step) => (
+      {stages.map((step) => (
         <KanbanColumn
-          key={step.status}
-          status={step.status}
+          key={step.id}
+          status={step.id}
           label={step.shortLabel}
-          orders={ordersByStatus[step.status]}
+          orders={ordersByStatus[step.id] || []}
           draggingOrderId={draggingOrderId}
-          isDropTarget={dropTargetStatus === step.status}
+          isDropTarget={dropTargetStatus === step.id}
           onDragStart={setDraggingOrderId}
           onDragEnd={() => {
             setDraggingOrderId(null);

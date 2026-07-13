@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { OrderStatus } from '@/domain/entities/Order';
+import { OrderStatus, DefaultOrderStatuses } from '@/domain/entities/Order';
 import type { ClientSummary } from '@/domain/entities/Client';
 import { ORDER_TIMELINE_STEPS } from '@/presentation/components/orders/orderTimelineSteps';
 import { createOrderSchema, type CreateOrderInput } from '@/domain/schemas/order.schema';
@@ -25,7 +25,7 @@ function getDefaultFormValues(): CreateOrderInput {
     orderDate: new Date().toISOString().slice(0, 10),
     estimatedValue: 0,
     weightInKg: 0,
-    status: OrderStatus.AGUARDANDO_APROVACAO,
+    status: DefaultOrderStatuses.AGUARDANDO_APROVACAO,
   };
 }
 

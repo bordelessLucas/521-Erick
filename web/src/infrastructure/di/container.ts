@@ -11,7 +11,9 @@ import type { IAgentOrderLinkRepository } from '@/domain/agent/IAgentOrderLinkRe
 import type { IAgentInterpreter, IExternalSystemAdapter } from '@/domain/agent/IAgentPorts';
 import { FirebaseClientRepository } from '@/infrastructure/firebase/FirebaseClientRepository';
 import { FirebaseOrderRepository } from '@/infrastructure/firebase/FirebaseOrderRepository';
+import { FirebasePipelineStageRepository } from '@/infrastructure/firebase/FirebasePipelineStageRepository';
 import { FirebaseAgentOrderLinkRepository } from '@/infrastructure/agent/FirebaseAgentOrderLinkRepository';
+import type { IPipelineStageRepository } from '@/domain/repositories/IPipelineStageRepository';
 import { RuleBasedAgentInterpreter } from '@/infrastructure/agent/RuleBasedAgentInterpreter';
 import { StubExternalSystemAdapter } from '@/infrastructure/agent/StubExternalSystemAdapter';
 
@@ -28,6 +30,7 @@ class Container {
   private externalSystemAdapter: IExternalSystemAdapter | null = null;
   private agentInterpreter: IAgentInterpreter | null = null;
   private systemAgentService: SystemAgentService | null = null;
+  private pipelineStageRepository: IPipelineStageRepository | null = null;
 
   getAuthRepository(): IAuthRepository {
     if (!this.authRepository) {
@@ -48,6 +51,13 @@ class Container {
       this.clientRepository = new FirebaseClientRepository();
     }
     return this.clientRepository;
+  }
+
+  getPipelineStageRepository(): IPipelineStageRepository {
+    if (!this.pipelineStageRepository) {
+      this.pipelineStageRepository = new FirebasePipelineStageRepository();
+    }
+    return this.pipelineStageRepository;
   }
 
   getAdminOrderService(): AdminOrderService {
