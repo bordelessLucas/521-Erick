@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import type { Order, OrderStatus } from '@/domain/entities/Order';
 import { spacing } from '@/core/theme';
-import { ORDER_TIMELINE_STEPS } from '@/presentation/components/orders/orderTimelineSteps';
+import { usePipelineStages } from '@/presentation/context/PipelineStagesContext';
 import { KanbanColumn } from './KanbanColumn';
 
 interface OrdersKanbanBoardProps {
@@ -16,17 +16,22 @@ export function OrdersKanbanBoard({
   onPressOrder,
   onMoveOrder,
 }: OrdersKanbanBoardProps) {
+  const { stages } = usePipelineStages();
+
   const ordersByStatus = useMemo(() => {
     const grouped = Object.fromEntries(
-      ORDER_TIMELINE_STEPS.map((step) => [step.status, [] as Order[]]),
+      stages.map((step) => [step.id, [] as Order[]]),
     ) as Record<OrderStatus, Order[]>;
 
     for (const order of orders) {
+      if (!grouped[order.status]) {
+        grouped[order.status] = [];
+      }
       grouped[order.status]?.push(order);
     }
 
     return grouped;
-  }, [orders]);
+  }, [orders, stages]);
 
   return (
     <ScrollView
@@ -34,11 +39,11 @@ export function OrdersKanbanBoard({
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.board}
     >
-      {ORDER_TIMELINE_STEPS.map((step) => (
+      {stages.map((step) => (
         <KanbanColumn
-          key={step.status}
+          key={step.id}
           label={step.shortLabel}
-          orders={ordersByStatus[step.status]}
+          orders={ordersByStatus[step.id] || []}
           onPressOrder={onPressOrder}
           onMoveOrder={onMoveOrder}
         />

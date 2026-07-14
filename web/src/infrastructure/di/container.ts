@@ -12,8 +12,10 @@ import type { IAgentInterpreter, IExternalSystemAdapter } from '@/domain/agent/I
 import { FirebaseClientRepository } from '@/infrastructure/firebase/FirebaseClientRepository';
 import { FirebaseOrderRepository } from '@/infrastructure/firebase/FirebaseOrderRepository';
 import { FirebasePipelineStageRepository } from '@/infrastructure/firebase/FirebasePipelineStageRepository';
+import { FirebaseCollaboratorRepository } from '@/infrastructure/firebase/FirebaseCollaboratorRepository';
 import { FirebaseAgentOrderLinkRepository } from '@/infrastructure/agent/FirebaseAgentOrderLinkRepository';
 import type { IPipelineStageRepository } from '@/domain/repositories/IPipelineStageRepository';
+import type { ICollaboratorRepository } from '@/domain/repositories/ICollaboratorRepository';
 import { RuleBasedAgentInterpreter } from '@/infrastructure/agent/RuleBasedAgentInterpreter';
 import { StubExternalSystemAdapter } from '@/infrastructure/agent/StubExternalSystemAdapter';
 
@@ -31,6 +33,7 @@ class Container {
   private agentInterpreter: IAgentInterpreter | null = null;
   private systemAgentService: SystemAgentService | null = null;
   private pipelineStageRepository: IPipelineStageRepository | null = null;
+  private collaboratorRepository: ICollaboratorRepository | null = null;
 
   getAuthRepository(): IAuthRepository {
     if (!this.authRepository) {
@@ -58,6 +61,13 @@ class Container {
       this.pipelineStageRepository = new FirebasePipelineStageRepository();
     }
     return this.pipelineStageRepository;
+  }
+
+  getCollaboratorRepository(): ICollaboratorRepository {
+    if (!this.collaboratorRepository) {
+      this.collaboratorRepository = new FirebaseCollaboratorRepository();
+    }
+    return this.collaboratorRepository;
   }
 
   getAdminOrderService(): AdminOrderService {

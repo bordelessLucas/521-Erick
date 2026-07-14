@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { OrderStatus } from '@/domain/entities/Order';
+import type { OrderStatus } from '@/domain/entities/Order';
+import { DefaultOrderStatuses } from '@/domain/entities/Order';
 import type { ClientSummary } from '@/domain/entities/Client';
 import { createOrderSchema, type CreateOrderInput } from '@/domain/schemas/order.schema';
 import type { CreateOrderWithClientInput } from '@/application/orders/AdminOrderService';
@@ -9,7 +10,7 @@ import { colors, spacing } from '@/core/theme';
 import { AppText } from '@/presentation/components/ui/Text';
 import { Button } from '@/presentation/components/ui/Button';
 import { Input } from '@/presentation/components/ui/Input';
-import { ORDER_TIMELINE_STEPS } from '@/presentation/components/orders/orderTimelineSteps';
+import { usePipelineStages } from '@/presentation/context/PipelineStagesContext';
 
 interface CreateOrderModalProps {
   visible: boolean;
@@ -27,7 +28,7 @@ function getDefaultFormValues(): CreateOrderInput {
     orderDate: new Date().toISOString().slice(0, 10),
     estimatedValue: 0,
     weightInKg: 0,
-    status: OrderStatus.AGUARDANDO_APROVACAO,
+    status: DefaultOrderStatuses.AGUARDANDO_APROVACAO,
   };
 }
 
@@ -38,6 +39,7 @@ export function CreateOrderModal({
   onLookupClient,
   onSubmit,
 }: CreateOrderModalProps) {
+  const { stages } = usePipelineStages();
   const [formValues, setFormValues] = useState<CreateOrderInput>(getDefaultFormValues);
   const [errors, setErrors] = useState<Partial<Record<keyof CreateOrderInput, string>>>({});
   const [existingClient, setExistingClient] = useState<ClientSummary | null>(null);
@@ -253,13 +255,13 @@ export function CreateOrderModal({
               Etapa inicial
             </AppText>
             <View style={styles.statusList}>
-              {ORDER_TIMELINE_STEPS.map((step) => {
-                const isSelected = formValues.status === step.status;
+              {stages.map((step) => {
+                const isSelected = formValues.status === step.id;
                 return (
                   <Pressable
-                    key={step.status}
+                    key={step.id}
                     onPress={() =>
-                      setFormValues((current) => ({ ...current, status: step.status }))
+                      setFormValues((current) => ({ ...current, status: step.id }))
                     }
                     style={[styles.statusOption, isSelected && styles.statusOptionActive]}
                   >

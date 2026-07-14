@@ -10,9 +10,13 @@ import { ClientCredentialsModal } from './ClientCredentialsModal';
 import { CreateOrderModal } from './CreateOrderModal';
 import { OrderDetailsModal } from './OrderDetailsModal';
 import { OrdersKanbanBoard } from './OrdersKanbanBoard';
+import { ManageStagesModal } from './ManageStagesModal';
+import { ManageCollaboratorsModal } from './ManageCollaboratorsModal';
 
 export function OrdersKanbanContainer() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isManageStagesModalOpen, setIsManageStagesModalOpen] = useState(false);
+  const [isManageCollaboratorsModalOpen, setIsManageCollaboratorsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [newClientCredentials, setNewClientCredentials] =
     useState<ClientAccessCredentials | null>(null);
@@ -47,12 +51,26 @@ export function OrdersKanbanContainer() {
         <AppText variant="bodySmall" color={colors.muted}>
           {orders.length} pedido{orders.length === 1 ? '' : 's'} no quadro
         </AppText>
-        <Button
-          title="+ Novo pedido"
-          variant="primary"
-          size="sm"
-          onPress={() => setIsCreateModalOpen(true)}
-        />
+        <View style={styles.actions}>
+          <Button
+            title="Etapas"
+            variant="secondary"
+            size="sm"
+            onPress={() => setIsManageStagesModalOpen(true)}
+          />
+          <Button
+            title="Equipe"
+            variant="secondary"
+            size="sm"
+            onPress={() => setIsManageCollaboratorsModalOpen(true)}
+          />
+          <Button
+            title="+ Novo"
+            variant="primary"
+            size="sm"
+            onPress={() => setIsCreateModalOpen(true)}
+          />
+        </View>
       </View>
 
       {error ? (
@@ -97,6 +115,16 @@ export function OrdersKanbanContainer() {
         visible={newClientCredentials !== null}
         onClose={() => setNewClientCredentials(null)}
       />
+
+      <ManageStagesModal
+        visible={isManageStagesModalOpen}
+        onClose={() => setIsManageStagesModalOpen(false)}
+      />
+
+      <ManageCollaboratorsModal
+        visible={isManageCollaboratorsModalOpen}
+        onClose={() => setIsManageCollaboratorsModalOpen(false)}
+      />
     </View>
   );
 }
@@ -114,7 +142,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: spacing.md,
+    gap: spacing.sm,
+    flexWrap: 'wrap',
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    flexWrap: 'wrap',
   },
   alert: {
     borderWidth: 1,

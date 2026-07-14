@@ -1,6 +1,8 @@
 import { FirebaseAuthRepository } from '@/infrastructure/firebase/FirebaseAuthRepository';
 import { FirebaseClientRepository } from '@/infrastructure/firebase/FirebaseClientRepository';
 import { FirebaseOrderRepository } from '@/infrastructure/firebase/FirebaseOrderRepository';
+import { FirebasePipelineStageRepository } from '@/infrastructure/firebase/FirebasePipelineStageRepository';
+import { FirebaseCollaboratorRepository } from '@/infrastructure/firebase/FirebaseCollaboratorRepository';
 import { SignInUseCase } from '@/domain/usecases/SignInUseCase';
 import { SignUpUseCase } from '@/domain/usecases/SignUpUseCase';
 import { AuthService } from '@/application/auth/AuthService';
@@ -9,6 +11,8 @@ import { SystemAgentService } from '@/application/agent/SystemAgentService';
 import { IAuthRepository } from '@/domain/repositories/IAuthRepository';
 import { IClientRepository } from '@/domain/repositories/IClientRepository';
 import { IOrderRepository } from '@/domain/repositories/IOrderRepository';
+import type { IPipelineStageRepository } from '@/domain/repositories/IPipelineStageRepository';
+import type { ICollaboratorRepository } from '@/domain/repositories/ICollaboratorRepository';
 import type { IAgentOrderLinkRepository } from '@/domain/agent/IAgentOrderLinkRepository';
 import type { IAgentInterpreter, IExternalSystemAdapter } from '@/domain/agent/IAgentPorts';
 import { FirebaseAgentOrderLinkRepository } from '@/infrastructure/agent/FirebaseAgentOrderLinkRepository';
@@ -19,6 +23,8 @@ class Container {
   private authRepository: IAuthRepository | null = null;
   private orderRepository: IOrderRepository | null = null;
   private clientRepository: IClientRepository | null = null;
+  private pipelineStageRepository: IPipelineStageRepository | null = null;
+  private collaboratorRepository: ICollaboratorRepository | null = null;
   private adminOrderService: AdminOrderService | null = null;
   private agentLinkRepository: IAgentOrderLinkRepository | null = null;
   private externalSystemAdapter: IExternalSystemAdapter | null = null;
@@ -44,6 +50,20 @@ class Container {
       this.clientRepository = new FirebaseClientRepository();
     }
     return this.clientRepository;
+  }
+
+  getPipelineStageRepository(): IPipelineStageRepository {
+    if (!this.pipelineStageRepository) {
+      this.pipelineStageRepository = new FirebasePipelineStageRepository();
+    }
+    return this.pipelineStageRepository;
+  }
+
+  getCollaboratorRepository(): ICollaboratorRepository {
+    if (!this.collaboratorRepository) {
+      this.collaboratorRepository = new FirebaseCollaboratorRepository();
+    }
+    return this.collaboratorRepository;
   }
 
   getAdminOrderService(): AdminOrderService {

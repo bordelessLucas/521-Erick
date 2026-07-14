@@ -5,7 +5,7 @@ import { formatCnpj, normalizeCnpj } from '@/domain/utils/cnpj';
 import { isAdminEmail } from '@/infrastructure/firebase/adminAccess';
 import { requireFirebaseAuthSession } from './firebaseAuthSession';
 
-export type UserRole = 'client' | 'admin';
+export type UserRole = 'client' | 'admin' | 'collaborator';
 
 export interface UserProfile {
   email: string;
@@ -51,7 +51,7 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
   const currentUser = await requireFirebaseAuthSession();
   const profile = await getCurrentUserProfile();
 
-  if (profile?.role === 'admin') {
+  if (profile?.role === 'admin' || profile?.role === 'collaborator') {
     return true;
   }
 

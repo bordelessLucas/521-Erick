@@ -2,12 +2,9 @@ import { View, StyleSheet } from 'react-native';
 import type { OrderStatus } from '@/domain/entities/Order';
 import { colors, spacing } from '@/core/theme';
 import { AppText } from '@/presentation/components/ui/Text';
-import {
-  ORDER_TIMELINE_STEPS,
-  getActiveStepIndex,
-  getStepState,
-  type TimelineStepState,
-} from './orderTimelineSteps';
+import { usePipelineStages } from '@/presentation/context/PipelineStagesContext';
+
+type TimelineStepState = 'completed' | 'current' | 'pending';
 
 interface OrderTimelineProps {
   status: OrderStatus;
@@ -35,17 +32,26 @@ function StepMarker({ state }: { state: TimelineStepState }) {
 }
 
 export function OrderTimeline({ status }: OrderTimelineProps) {
-  const activeIndex = getActiveStepIndex(status);
-  const isFullyComplete = status === ORDER_TIMELINE_STEPS.at(-1)?.status;
+  const { stages } = usePipelineStages();
+
+  const activeIndex = stages.findIndex((s) => s.id === status);
+  const isFullyComplete = status === stages.at(-1)?.id;
+
+  const getStepState = (index: number): TimelineStepState => {
+    if (isFullyComplete) return 'completed';
+    if (index < activeIndex) return 'completed';
+    if (index === activeIndex) return 'current';
+    return 'pending';
+  };
 
   return (
     <View style={styles.container} accessibilityLabel="Progresso do pedido">
-      {ORDER_TIMELINE_STEPS.map((step, index) => {
-        const state = getStepState(index, activeIndex, isFullyComplete);
-        const isLast = index === ORDER_TIMELINE_STEPS.length - 1;
+      {stages.map((step, index) => {
+        const state = getStepState(index);
+        const isLast = index === stages.length - 1;
 
         return (
-          <View key={step.status} style={styles.step}>
+          <View key={step.id} style={styles.step}>
             <View style={styles.track}>
               <StepMarker state={state} />
               {!isLast && (

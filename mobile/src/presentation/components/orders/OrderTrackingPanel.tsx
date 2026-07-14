@@ -4,17 +4,19 @@ import { colors, spacing } from '@/core/theme';
 import { formatCurrency, formatDate, formatWeight } from '@/core/utils/format';
 import { AppText } from '@/presentation/components/ui/Text';
 import { OrderTimeline } from './OrderTimeline';
-import { getOrderStatusHeadline, getOrderStatusTitle } from './orderTimelineSteps';
-import { orderStatusConfig } from './orderStatusConfig';
+import { usePipelineStages } from '@/presentation/context/PipelineStagesContext';
 
 interface OrderTrackingPanelProps {
   order: Order;
 }
 
 export function OrderTrackingPanel({ order }: OrderTrackingPanelProps) {
-  const statusTitle = getOrderStatusTitle(order.status);
-  const statusHeadline = getOrderStatusHeadline(order.status);
-  const statusLabel = orderStatusConfig[order.status].label;
+  const { stages } = usePipelineStages();
+  const activeStage = stages.find((s) => s.id === order.status) || stages[0];
+
+  const statusTitle = activeStage?.label || order.status;
+  const statusHeadline = activeStage?.description || '';
+  const statusLabel = activeStage?.shortLabel || order.status;
 
   return (
     <View style={styles.panel}>

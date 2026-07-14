@@ -8,7 +8,7 @@ import { AuthProvider, useAuth } from '@/presentation/context/AuthContext';
 import { AppNavigator } from '@/presentation/navigation/AppNavigator';
 import { LoginScreen } from '@/presentation/screens/LoginScreen';
 import { RegisterScreen } from '@/presentation/screens/RegisterScreen';
-
+import { PipelineStagesProvider } from '@/presentation/context/PipelineStagesContext';
 type AuthScreen = 'login' | 'register';
 
 function AppContent() {
@@ -58,8 +58,10 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <StatusBar style="dark" />
-      <AppContent />
+      <PipelineStagesProvider>
+        <StatusBar style="dark" />
+        <AppContent />
+      </PipelineStagesProvider>
     </AuthProvider>
   );
 }

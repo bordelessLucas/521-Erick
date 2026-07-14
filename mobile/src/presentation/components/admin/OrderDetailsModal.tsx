@@ -4,7 +4,7 @@ import { colors, spacing } from '@/core/theme';
 import { AppText } from '@/presentation/components/ui/Text';
 import { Button } from '@/presentation/components/ui/Button';
 import { OrderTrackingPanel } from '@/presentation/components/orders/OrderTrackingPanel';
-import { ORDER_TIMELINE_STEPS } from '@/presentation/components/orders/orderTimelineSteps';
+import { usePipelineStages } from '@/presentation/context/PipelineStagesContext';
 
 interface OrderDetailsModalProps {
   order: Order | null;
@@ -19,6 +19,8 @@ export function OrderDetailsModal({
   onClose,
   onMoveOrder,
 }: OrderDetailsModalProps) {
+  const { stages } = usePipelineStages();
+
   if (!order) {
     return null;
   }
@@ -28,10 +30,10 @@ export function OrderDetailsModal({
       'Mover pedido',
       'Selecione a nova etapa:',
       [
-        ...ORDER_TIMELINE_STEPS.map((step) => ({
+        ...stages.map((step) => ({
           text: step.shortLabel,
           onPress: () => {
-            onMoveOrder(order.id, step.status);
+            onMoveOrder(order.id, step.id);
             onClose();
           },
         })),

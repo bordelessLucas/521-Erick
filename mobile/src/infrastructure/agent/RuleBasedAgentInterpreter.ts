@@ -3,7 +3,7 @@ import { AgentCapability } from '@/domain/agent/AgentCapability';
 import type { ExternalOrderPayload, ExternalSystemEvent } from '@/domain/agent/ExternalSystemEvent';
 import type { IAgentInterpreter } from '@/domain/agent/IAgentPorts';
 import { mapExternalStatusToOrderStatus } from '@/domain/agent/mapExternalStatus';
-import { OrderStatus } from '@/domain/entities/Order';
+import { DefaultOrderStatuses, type OrderStatus } from '@/domain/entities/Order';
 
 function isOrderPayload(payload: ExternalSystemEvent['payload']): payload is ExternalOrderPayload {
   return (
@@ -27,7 +27,7 @@ export class RuleBasedAgentInterpreter implements IAgentInterpreter {
     const payload = event.payload;
     const status = mapExternalStatusToOrderStatus(
       payload.externalStatus,
-      OrderStatus.AGUARDANDO_APROVACAO,
+      DefaultOrderStatuses.AGUARDANDO_APROVACAO,
     );
 
     if (event.type === 'ORDER_STATUS_CHANGED') {

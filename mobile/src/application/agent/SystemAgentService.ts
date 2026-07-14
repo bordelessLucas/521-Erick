@@ -1,5 +1,5 @@
 import type { Order } from '@/domain/entities/Order';
-import { OrderStatus } from '@/domain/entities/Order';
+import { DefaultOrderStatuses, type OrderStatus } from '@/domain/entities/Order';
 import type { AdminOrderService } from '@/application/orders/AdminOrderService';
 import type { IOrderRepository } from '@/domain/repositories/IOrderRepository';
 import type { IClientRepository } from '@/domain/repositories/IClientRepository';
@@ -301,5 +301,5 @@ export class SystemAgentService {
 }
 
 export function defaultOrderStatus(): OrderStatus {
-  return OrderStatus.AGUARDANDO_APROVACAO;
+  return DefaultOrderStatuses.AGUARDANDO_APROVACAO;
 }

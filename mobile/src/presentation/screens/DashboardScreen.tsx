@@ -16,8 +16,7 @@ import { AppText } from '@/presentation/components/ui/Text';
 import { TrancattoPortalHeader } from '@/presentation/components/layout/TrancattoPortalHeader';
 import { useOrders } from '@/presentation/hooks/useOrders';
 import { useAuth } from '@/presentation/context/AuthContext';
-import { getOrderStatusTitle } from '@/presentation/components/orders/orderTimelineSteps';
-import { orderStatusConfig } from '@/presentation/components/orders/orderStatusConfig';
+import { usePipelineStages } from '@/presentation/context/PipelineStagesContext';
 import type { RootStackParamList } from '@/presentation/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Dashboard'>;
@@ -27,6 +26,7 @@ export function DashboardScreen({ navigation }: Props) {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { orders, isLoading, error, refresh } = useOrders();
+  const { stages } = usePipelineStages();
 
   const filteredOrders = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -122,7 +122,12 @@ export function DashboardScreen({ navigation }: Props) {
               </AppText>
             </View>
           }
-          renderItem={({ item }) => (
+          renderItem={({ item }) => {
+            const activeStage = stages.find((s) => s.id === item.status) || stages[0];
+            const statusLabel = activeStage?.shortLabel || item.status;
+            const statusTitle = activeStage?.label || item.status;
+
+            return (
             <Pressable
               style={styles.card}
               onPress={() => navigation.navigate('OrderTracking', { orderId: item.id })}
@@ -132,11 +137,11 @@ export function DashboardScreen({ navigation }: Props) {
                   {item.id}
                 </AppText>
                 <AppText variant="caption" color={colors.label}>
-                  {orderStatusConfig[item.status].label}
+                  {statusLabel}
                 </AppText>
               </View>
               <AppText variant="bodySmall" color={colors.ink}>
-                {getOrderStatusTitle(item.status)}
+                {statusTitle}
               </AppText>
               <View style={styles.cardMeta}>
                 <AppText variant="caption" color={colors.muted}>
@@ -147,7 +152,8 @@ export function DashboardScreen({ navigation }: Props) {
                 </AppText>
               </View>
             </Pressable>
-          )}
+            );
+          }}
         />
       )}
     </View>

@@ -3,7 +3,7 @@ import type { Order, OrderStatus } from '@/domain/entities/Order';
 import { colors, spacing } from '@/core/theme';
 import { formatCurrency, formatDate, formatWeight } from '@/core/utils/format';
 import { AppText } from '@/presentation/components/ui/Text';
-import { ORDER_TIMELINE_STEPS } from '@/presentation/components/orders/orderTimelineSteps';
+import { usePipelineStages } from '@/presentation/context/PipelineStagesContext';
 
 interface KanbanCardProps {
   order: Order;
@@ -16,14 +16,16 @@ function shortenOrderId(orderId: string): string {
 }
 
 export function KanbanCard({ order, onPress, onMoveOrder }: KanbanCardProps) {
+  const { stages } = usePipelineStages();
+
   const handleLongPress = () => {
     Alert.alert(
       'Mover pedido',
       'Selecione a nova etapa:',
       [
-        ...ORDER_TIMELINE_STEPS.map((step) => ({
+        ...stages.map((step) => ({
           text: step.shortLabel,
-          onPress: () => onMoveOrder(order.id, step.status),
+          onPress: () => onMoveOrder(order.id, step.id),
         })),
         { text: 'Cancelar', style: 'cancel' },
       ],
