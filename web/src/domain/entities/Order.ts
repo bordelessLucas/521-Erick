@@ -16,6 +16,8 @@ export interface Order {
   estimatedValue: number;
   weightInKg: number;
   status: OrderStatus;
+  /** ISO timestamp of when the order entered the current status/stage. */
+  statusChangedAt: string;
 }
 
 export interface PipelineStage {
@@ -24,4 +26,12 @@ export interface PipelineStage {
   shortLabel: string;
   description: string;
   orderIndex: number;
+  /**
+   * Average/target time in minutes for this stage.
+   * Used for green / yellow / red traffic-light on the board.
+   * 0 or undefined = no SLA indicator.
+   */
+  averageMinutes: number;
 }
+
+export type StageTrafficLight = 'green' | 'yellow' | 'red';

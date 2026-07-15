@@ -7,6 +7,7 @@ export const mockOrders: Order[] = [
     orderDate: '2026-07-01T10:30:00.000Z',
     estimatedValue: 48750.0,
     weightInKg: 1250.5,
+    statusChangedAt: '2026-07-01T10:30:00.000Z',
     status: DefaultOrderStatuses.FATURADO,
   },
   {
@@ -15,6 +16,7 @@ export const mockOrders: Order[] = [
     orderDate: '2026-06-28T14:15:00.000Z',
     estimatedValue: 32100.0,
     weightInKg: 890.0,
+    statusChangedAt: '2026-06-28T14:15:00.000Z',
     status: DefaultOrderStatuses.PRODUCAO,
   },
   {
@@ -23,6 +25,7 @@ export const mockOrders: Order[] = [
     orderDate: '2026-06-25T09:00:00.000Z',
     estimatedValue: 15600.0,
     weightInKg: 420.75,
+    statusChangedAt: '2026-06-25T09:00:00.000Z',
     status: DefaultOrderStatuses.SEPARACAO,
   },
   {
@@ -31,6 +34,7 @@ export const mockOrders: Order[] = [
     orderDate: '2026-06-20T16:45:00.000Z',
     estimatedValue: 22400.0,
     weightInKg: 610.0,
+    statusChangedAt: '2026-06-20T16:45:00.000Z',
     status: DefaultOrderStatuses.ORDEM_DE_ROLINHO,
   },
   {
@@ -39,6 +43,7 @@ export const mockOrders: Order[] = [
     orderDate: '2026-06-18T11:20:00.000Z',
     estimatedValue: 9800.0,
     weightInKg: 275.3,
+    statusChangedAt: '2026-06-18T11:20:00.000Z',
     status: DefaultOrderStatuses.APROVADO,
   },
   {
@@ -47,6 +52,7 @@ export const mockOrders: Order[] = [
     orderDate: '2026-06-15T08:00:00.000Z',
     estimatedValue: 54300.0,
     weightInKg: 1480.0,
+    statusChangedAt: '2026-06-15T08:00:00.000Z',
     status: DefaultOrderStatuses.AGUARDANDO_APROVACAO,
   },
   {
@@ -55,6 +61,7 @@ export const mockOrders: Order[] = [
     orderDate: '2026-06-10T13:30:00.000Z',
     estimatedValue: 18900.0,
     weightInKg: 520.0,
+    statusChangedAt: '2026-06-10T13:30:00.000Z',
     status: DefaultOrderStatuses.FATURADO,
   },
   {
@@ -63,6 +70,7 @@ export const mockOrders: Order[] = [
     orderDate: '2026-06-05T10:00:00.000Z',
     estimatedValue: 41200.0,
     weightInKg: 1100.25,
+    statusChangedAt: '2026-06-05T10:00:00.000Z',
     status: DefaultOrderStatuses.FATURADO,
   },
 ];

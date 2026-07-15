@@ -16,6 +16,7 @@ export interface Order {
   estimatedValue: number;
   weightInKg: number;
   status: OrderStatus;
+  statusChangedAt: string;
 }
 
 export interface PipelineStage {
@@ -24,4 +25,7 @@ export interface PipelineStage {
   shortLabel: string;
   description: string;
   orderIndex: number;
+  averageMinutes: number;
 }
+
+export type StageTrafficLight = 'green' | 'yellow' | 'red';

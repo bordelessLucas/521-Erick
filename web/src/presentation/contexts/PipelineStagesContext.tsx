@@ -12,6 +12,7 @@ const DEFAULT_STAGES: PipelineStage[] = [
     shortLabel: 'Aprovação',
     description: 'Seu pedido foi recebido e aguarda validação comercial.',
     orderIndex: 0,
+    averageMinutes: 10,
   },
   {
     id: DefaultOrderStatuses.APROVADO,
@@ -19,6 +20,7 @@ const DEFAULT_STAGES: PipelineStage[] = [
     shortLabel: 'Aprovado',
     description: 'O pedido foi confirmado e entrou na fila de produção.',
     orderIndex: 1,
+    averageMinutes: 5,
   },
   {
     id: DefaultOrderStatuses.ORDEM_DE_ROLINHO,
@@ -26,6 +28,7 @@ const DEFAULT_STAGES: PipelineStage[] = [
     shortLabel: 'Rolinho',
     description: 'A ordem de rolinho foi emitida para a fábrica.',
     orderIndex: 2,
+    averageMinutes: 5,
   },
   {
     id: DefaultOrderStatuses.SEPARACAO,
@@ -33,6 +36,7 @@ const DEFAULT_STAGES: PipelineStage[] = [
     shortLabel: 'Separação',
     description: 'Materiais e insumos estão sendo separados.',
     orderIndex: 3,
+    averageMinutes: 5,
   },
   {
     id: DefaultOrderStatuses.PRODUCAO,
@@ -40,6 +44,7 @@ const DEFAULT_STAGES: PipelineStage[] = [
     shortLabel: 'Produção',
     description: 'Seu pedido está sendo produzido na fábrica.',
     orderIndex: 4,
+    averageMinutes: 3,
   },
   {
     id: DefaultOrderStatuses.FATURADO,
@@ -47,6 +52,7 @@ const DEFAULT_STAGES: PipelineStage[] = [
     shortLabel: 'Faturado',
     description: 'Pedido concluído e faturado com sucesso.',
     orderIndex: 5,
+    averageMinutes: 0,
   },
 ];
 
@@ -72,7 +78,17 @@ export function PipelineStagesProvider({ children }: { children: ReactNode }) {
       const repo = container.getPipelineStageRepository();
       const data = await repo.getAll();
       if (data.length > 0) {
-        setStages(data);
+        const withMinutes = data.map((stage) => {
+          if (stage.averageMinutes > 0) {
+            return stage;
+          }
+          const fallback = DEFAULT_STAGES.find((item) => item.id === stage.id);
+          return {
+            ...stage,
+            averageMinutes: fallback?.averageMinutes ?? 0,
+          };
+        });
+        setStages(withMinutes);
       } else {
         // Se a coleção estiver vazia (primeiro uso), inserimos os padrões
         for (const stage of DEFAULT_STAGES) {

@@ -6,6 +6,7 @@ import { KanbanCard } from './KanbanCard';
 interface KanbanColumnProps {
   status: OrderStatus;
   label: string;
+  averageMinutes: number;
   orders: Order[];
   draggingOrderId: string | null;
   isDropTarget: boolean;
@@ -20,6 +21,7 @@ interface KanbanColumnProps {
 export function KanbanColumn({
   status,
   label,
+  averageMinutes,
   orders,
   draggingOrderId,
   isDropTarget,
@@ -44,7 +46,12 @@ export function KanbanColumn({
       }}
     >
       <header className="kanban-column__header">
-        <h3>{label}</h3>
+        <div>
+          <h3>{label}</h3>
+          {averageMinutes > 0 && (
+            <p className="kanban-column__avg">Média {averageMinutes} min</p>
+          )}
+        </div>
         <span className="kanban-column__count">{orders.length}</span>
       </header>
 
@@ -56,6 +63,7 @@ export function KanbanColumn({
             <KanbanCard
               key={order.id}
               order={order}
+              averageMinutes={averageMinutes}
               isDragging={draggingOrderId === order.id}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}

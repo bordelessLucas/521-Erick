@@ -29,6 +29,7 @@ export function ManageStagesModal({ visible, onClose }: ManageStagesModalProps) 
   const [formShortLabel, setFormShortLabel] = useState('');
   const [formDescription, setFormDescription] = useState('');
   const [formOrderIndex, setFormOrderIndex] = useState(0);
+  const [formAverageMinutes, setFormAverageMinutes] = useState('5');
 
   const startEdit = (stage: PipelineStage) => {
     setFormId(stage.id);
@@ -36,6 +37,7 @@ export function ManageStagesModal({ visible, onClose }: ManageStagesModalProps) 
     setFormShortLabel(stage.shortLabel);
     setFormDescription(stage.description);
     setFormOrderIndex(stage.orderIndex);
+    setFormAverageMinutes(String(stage.averageMinutes ?? 0));
     setEditingStage(stage);
   };
 
@@ -45,6 +47,7 @@ export function ManageStagesModal({ visible, onClose }: ManageStagesModalProps) 
     setFormShortLabel('');
     setFormDescription('');
     setFormOrderIndex(stages.length);
+    setFormAverageMinutes('5');
     setEditingStage('NEW');
   };
 
@@ -66,6 +69,7 @@ export function ManageStagesModal({ visible, onClose }: ManageStagesModalProps) 
         shortLabel: formShortLabel,
         description: formDescription,
         orderIndex: formOrderIndex,
+        averageMinutes: Math.max(0, Number(formAverageMinutes) || 0),
       };
 
       const repo = container.getPipelineStageRepository();
@@ -122,7 +126,7 @@ export function ManageStagesModal({ visible, onClose }: ManageStagesModalProps) 
             <View style={styles.listContainer}>
               <View style={styles.listHeader}>
                 <AppText variant="bodySmall" color={colors.muted} style={styles.flex1}>
-                  Gerencie as etapas que aparecem no seu kanban e timeline.
+                  Defina o tempo médio de cada etapa (verde / amarelo / vermelho no quadro).
                 </AppText>
                 <Button title="+ Nova Etapa" variant="primary" size="sm" onPress={startNew} />
               </View>
@@ -136,6 +140,9 @@ export function ManageStagesModal({ visible, onClose }: ManageStagesModalProps) 
                       </AppText>
                       <AppText variant="caption" color={colors.muted}>
                         {stage.id}
+                        {stage.averageMinutes > 0
+                          ? ` · médio ${stage.averageMinutes} min`
+                          : ' · sem tempo médio'}
                       </AppText>
                     </View>
                     <View style={styles.actions}>
@@ -198,6 +205,23 @@ export function ManageStagesModal({ visible, onClose }: ManageStagesModalProps) 
                   multiline
                   numberOfLines={3}
                 />
+              </View>
+
+              <View style={styles.field}>
+                <AppText variant="label" color={colors.ink}>
+                  Tempo médio (minutos)
+                </AppText>
+                <TextInput
+                  style={styles.input}
+                  value={formAverageMinutes}
+                  onChangeText={setFormAverageMinutes}
+                  keyboardType="numeric"
+                  placeholder="Ex: 5"
+                  placeholderTextColor={colors.muted}
+                />
+                <AppText variant="caption" color={colors.muted}>
+                  Divide o tempo em 3 bandas: verde, amarelo e vermelho. Use 0 para desativar.
+                </AppText>
               </View>
 
               <View style={styles.formActions}>

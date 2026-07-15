@@ -84,12 +84,14 @@ export class FirebaseOrderRepository implements IOrderRepository {
   async create(data: CreateOrderData): Promise<Order> {
     await requireFirebaseAuthSession();
 
+    const statusChangedAt = new Date().toISOString();
     const payload: FirestoreOrderDocument = {
       clientCnpj: normalizeClientCnpj(data.clientCnpj),
       orderDate: data.orderDate,
       estimatedValue: data.estimatedValue,
       weightInKg: data.weightInKg,
       status: data.status,
+      statusChangedAt,
     };
 
     const documentRef = await addDoc(
@@ -104,7 +106,10 @@ export class FirebaseOrderRepository implements IOrderRepository {
     await requireFirebaseAuthSession();
 
     const documentRef = doc(getFirestoreDb(), FIRESTORE_COLLECTIONS.orders, orderId);
-    await updateDoc(documentRef, { status });
+    await updateDoc(documentRef, {
+      status,
+      statusChangedAt: new Date().toISOString(),
+    });
 
     const snapshot = await getDoc(documentRef);
 

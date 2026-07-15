@@ -6,18 +6,32 @@ import { KanbanCard } from './KanbanCard';
 
 interface KanbanColumnProps {
   label: string;
+  averageMinutes: number;
   orders: Order[];
   onPressOrder: (order: Order) => void;
   onMoveOrder: (orderId: string, status: OrderStatus) => void;
 }
 
-export function KanbanColumn({ label, orders, onPressOrder, onMoveOrder }: KanbanColumnProps) {
+export function KanbanColumn({
+  label,
+  averageMinutes,
+  orders,
+  onPressOrder,
+  onMoveOrder,
+}: KanbanColumnProps) {
   return (
     <View style={styles.column}>
       <View style={styles.header}>
-        <AppText variant="eyebrow" color={colors.label} style={styles.title}>
-          {label}
-        </AppText>
+        <View style={styles.titleBlock}>
+          <AppText variant="eyebrow" color={colors.label} style={styles.title}>
+            {label}
+          </AppText>
+          {averageMinutes > 0 ? (
+            <AppText variant="caption" color={colors.muted}>
+              Média {averageMinutes} min
+            </AppText>
+          ) : null}
+        </View>
         <View style={styles.count}>
           <AppText variant="caption" color={colors.muted} style={styles.countText}>
             {orders.length}
@@ -35,6 +49,7 @@ export function KanbanColumn({ label, orders, onPressOrder, onMoveOrder }: Kanba
             <KanbanCard
               key={order.id}
               order={order}
+              averageMinutes={averageMinutes}
               onPress={onPressOrder}
               onMoveOrder={onMoveOrder}
             />
@@ -61,6 +76,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
     backgroundColor: colors.cream,
+  },
+  titleBlock: {
+    flex: 1,
+    gap: 2,
   },
   title: {
     flex: 1,

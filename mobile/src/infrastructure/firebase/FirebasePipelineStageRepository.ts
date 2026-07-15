@@ -14,6 +14,17 @@ import { FIRESTORE_COLLECTIONS } from '@/core/config/firebaseConstants';
 import type { PipelineStage } from '@/domain/entities/Order';
 import type { IPipelineStageRepository } from '@/domain/repositories/IPipelineStageRepository';
 
+function normalizeStage(id: string, data: Record<string, unknown>): PipelineStage {
+  return {
+    id,
+    label: String(data.label ?? ''),
+    shortLabel: String(data.shortLabel ?? ''),
+    description: String(data.description ?? ''),
+    orderIndex: Number(data.orderIndex ?? 0),
+    averageMinutes: Number(data.averageMinutes ?? 0),
+  };
+}
+
 export class FirebasePipelineStageRepository implements IPipelineStageRepository {
   private get collectionRef() {
     return collection(getFirestoreDb(), FIRESTORE_COLLECTIONS.pipelineStages);
@@ -23,10 +34,7 @@ export class FirebasePipelineStageRepository implements IPipelineStageRepository
     const q = query(this.collectionRef, orderBy('orderIndex', 'asc'));
     const snapshot = await getDocs(q);
 
-    return snapshot.docs.map((docSnap) => ({
-      ...docSnap.data(),
-      id: docSnap.id,
-    })) as PipelineStage[];
+    return snapshot.docs.map((docSnap) => normalizeStage(docSnap.id, docSnap.data()));
   }
 
   async getById(id: string): Promise<PipelineStage | null> {
@@ -37,7 +45,7 @@ export class FirebasePipelineStageRepository implements IPipelineStageRepository
       return null;
     }
 
-    return { ...docSnap.data(), id: docSnap.id } as PipelineStage;
+    return normalizeStage(docSnap.id, docSnap.data());
   }
 
   async save(stage: PipelineStage): Promise<void> {

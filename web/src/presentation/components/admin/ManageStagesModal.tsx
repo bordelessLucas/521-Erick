@@ -26,6 +26,7 @@ export function ManageStagesModal({ isOpen, onClose }: ManageStagesModalProps) {
       const formData = new FormData(e.currentTarget);
       const stageId = formData.get('id') as string;
       const isNew = formData.get('isNew') === 'true';
+      const averageMinutes = Math.max(0, Number(formData.get('averageMinutes') || 0));
 
       const newStage: PipelineStage = {
         id: stageId,
@@ -33,6 +34,7 @@ export function ManageStagesModal({ isOpen, onClose }: ManageStagesModalProps) {
         shortLabel: formData.get('shortLabel') as string,
         description: formData.get('description') as string,
         orderIndex: isNew ? stages.length : Number(formData.get('orderIndex')),
+        averageMinutes,
       };
 
       const repo = container.getPipelineStageRepository();
@@ -88,7 +90,8 @@ export function ManageStagesModal({ isOpen, onClose }: ManageStagesModalProps) {
             <div className="space-y-4">
               <div className="flex justify-between items-center mb-4">
                 <p className="text-sm text-neutral-600">
-                  Gerencie as etapas que aparecem no seu kanban e timeline.
+                  Defina o tempo médio de cada etapa. No quadro, os cards ficam verdes, amarelos ou
+                  vermelhos conforme o tempo decorrido (1/3 · 2/3 · acima do médio).
                 </p>
                 <button
                   type="button"
@@ -104,7 +107,12 @@ export function ManageStagesModal({ isOpen, onClose }: ManageStagesModalProps) {
                   <li key={stage.id} className="p-3 flex justify-between items-center bg-white">
                     <div>
                       <p className="font-medium text-sm text-neutral-900">{stage.label}</p>
-                      <p className="text-xs text-neutral-500">{stage.id}</p>
+                      <p className="text-xs text-neutral-500">
+                        {stage.id}
+                        {stage.averageMinutes > 0
+                          ? ` · médio ${stage.averageMinutes} min`
+                          : ' · sem tempo médio'}
+                      </p>
                     </div>
                     <div className="flex gap-2">
                       <button
@@ -135,7 +143,7 @@ export function ManageStagesModal({ isOpen, onClose }: ManageStagesModalProps) {
                   <>
                     <input type="hidden" name="isNew" value={isNew ? 'true' : 'false'} />
                     <input type="hidden" name="orderIndex" value={stage?.orderIndex ?? ''} />
-                    
+
                     <div>
                       <label htmlFor="id" className="block text-sm font-medium text-neutral-700">
                         ID / Código
@@ -169,7 +177,10 @@ export function ManageStagesModal({ isOpen, onClose }: ManageStagesModalProps) {
                     </div>
 
                     <div>
-                      <label htmlFor="shortLabel" className="block text-sm font-medium text-neutral-700">
+                      <label
+                        htmlFor="shortLabel"
+                        className="block text-sm font-medium text-neutral-700"
+                      >
                         Nome Curto (ex: Kanban)
                       </label>
                       <input
@@ -183,7 +194,10 @@ export function ManageStagesModal({ isOpen, onClose }: ManageStagesModalProps) {
                     </div>
 
                     <div>
-                      <label htmlFor="description" className="block text-sm font-medium text-neutral-700">
+                      <label
+                        htmlFor="description"
+                        className="block text-sm font-medium text-neutral-700"
+                      >
                         Descrição (p/ Cliente)
                       </label>
                       <textarea
@@ -194,6 +208,29 @@ export function ManageStagesModal({ isOpen, onClose }: ManageStagesModalProps) {
                         defaultValue={stage?.description ?? ''}
                         className="mt-1 block w-full rounded-md border-neutral-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-2 border"
                       />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="averageMinutes"
+                        className="block text-sm font-medium text-neutral-700"
+                      >
+                        Tempo médio (minutos)
+                      </label>
+                      <input
+                        type="number"
+                        name="averageMinutes"
+                        id="averageMinutes"
+                        min={0}
+                        step={1}
+                        required
+                        defaultValue={stage?.averageMinutes ?? 5}
+                        className="mt-1 block w-full rounded-md border-neutral-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-2 border"
+                      />
+                      <p className="mt-1 text-xs text-neutral-500">
+                        Ex.: 5 → verde até ~1m40s, amarelo até ~3m20s, vermelho depois. Use 0 para
+                        desativar o semáforo nesta etapa.
+                      </p>
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4">

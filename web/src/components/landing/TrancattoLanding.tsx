@@ -4,22 +4,47 @@ import { FormEvent, useEffect, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import '@/styles/trancatto.css';
+import type { LandingContent } from '@/domain/entities/LandingContent';
+import { DEFAULT_LANDING_CONTENT } from '@/domain/landing/defaultLandingContent';
+import { container } from '@/infrastructure/di/container';
 
-const WHATSAPP_NUMBER = '5517997579903';
-
-const SWATCHES = [
-  { color: '#1b3227', name: 'Verde pinho' },
-  { color: '#c25e37', name: 'Terracota' },
-  { color: '#cebba4', name: 'Areia' },
-  { color: '#825247', name: 'Bordô' },
-  { color: '#283950', name: 'Azul malta' },
-  { color: '#71645d', name: 'Bronze' },
-] as const;
+function MultlineTitle({ value }: { value: string }) {
+  return (
+    <>
+      {value.split('\n').map((line, index, arr) => (
+        <span key={`${line}-${index}`}>
+          {line}
+          {index < arr.length - 1 ? <br /> : null}
+        </span>
+      ))}
+    </>
+  );
+}
 
 export function TrancattoLanding() {
+  const [content, setContent] = useState<LandingContent>(DEFAULT_LANDING_CONTENT);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isHeroVisible, setIsHeroVisible] = useState(false);
   const currentYear = new Date().getFullYear();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const data = await container.getLandingContentRepository().get();
+        if (!cancelled) {
+          setContent(data);
+        }
+      } catch (error) {
+        console.warn('Landing CMS unavailable, using defaults.', error);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setIsHeroVisible(true), 120);
@@ -51,9 +76,11 @@ export function TrancattoLanding() {
       `Telefone: ${telefone}`,
     ].join('\n');
 
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/${content.whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };
+
+  const [mainProduct, sideProduct] = content.products;
 
   return (
     <div className={`trancatto-page${isMenuOpen ? ' menu-open' : ''}`}>
@@ -108,18 +135,15 @@ export function TrancattoLanding() {
           <div className="hero-media" aria-hidden="true" />
           <div className="hero-shade" />
           <div className={`hero-content reveal${isHeroVisible ? ' is-visible' : ''}`}>
-            <p className="eyebrow">Fabricação própria · há mais de 15 anos</p>
+            <p className="eyebrow">{content.heroEyebrow}</p>
             <h1>
-              Tramas que
+              {content.heroTitleLine1}
               <br />
-              transformam.
+              {content.heroTitleLine2}
             </h1>
-            <p className="hero-copy">
-              Cordas e tricôs náuticos criados para dar forma, resistência e identidade aos seus
-              móveis.
-            </p>
+            <p className="hero-copy">{content.heroCopy}</p>
             <a className="text-link light" href="#produtos">
-              Conheça nossos produtos <span>↓</span>
+              {content.heroCta} <span>↓</span>
             </a>
           </div>
           <div className="hero-index">
@@ -129,205 +153,153 @@ export function TrancattoLanding() {
 
         <section className="intro section" id="sobre">
           <div>
-            <p className="eyebrow dark">Do fio ao acabamento</p>
-            <h2>Não entregamos apenas cordas. Entregamos possibilidades.</h2>
+            <p className="eyebrow dark">{content.introEyebrow}</p>
+            <h2>{content.introTitle}</h2>
           </div>
           <div className="intro-copy">
-            <p>
-              Todo o processo acontece dentro de casa. Da seleção dos fios ao acabamento final,
-              controlamos cada detalhe para garantir cores firmes, medidas padronizadas e
-              performance consistente.
-            </p>
+            <p>{content.introCopy}</p>
             <a className="text-link" href="#contato">
-              Fale com nossa equipe <span>↗</span>
+              {content.introCta} <span>↗</span>
             </a>
           </div>
         </section>
 
         <section className="numbers">
-          <div>
-            <strong>15+</strong>
-            <span>anos de experiência</span>
-          </div>
-          <div>
-            <strong>UV</strong>
-            <span>proteção para área externa</span>
-          </div>
-          <div>
-            <strong>BR</strong>
-            <span>envio para todo o Brasil</span>
-          </div>
-          <div>
-            <strong>100%</strong>
-            <span>produção própria</span>
-          </div>
+          {content.stats.map((stat) => (
+            <div key={`${stat.value}-${stat.label}`}>
+              <strong>{stat.value}</strong>
+              <span>{stat.label}</span>
+            </div>
+          ))}
         </section>
 
         <section className="products section" id="produtos">
           <div className="section-head">
-            <p className="eyebrow dark">Linhas Trançatto</p>
+            <p className="eyebrow dark">{content.productsEyebrow}</p>
             <h2>
-              Engenharia,
+              {content.productsTitleLine1}
               <br />
-              toque e cor.
+              {content.productsTitleLine2}
             </h2>
-            <p>
-              Materiais desenvolvidos para o setor moveleiro, com resistência estrutural e
-              acabamento que valoriza o desenho.
-            </p>
+            <p>{content.productsSubtitle}</p>
           </div>
 
-          <article className="product product-main">
-            <Image
-              src="/images/trancatto/asset-6.png"
-              alt="Detalhe de cordas e tricôs náuticos em terracota"
-              width={900}
-              height={610}
-              loading="lazy"
-              sizes="(max-width: 900px) 50vw, 40vw"
-            />
-            <div className="product-caption">
-              <span>01</span>
-              <h3>Tricô náutico</h3>
-              <p>Robusto, marcante e disponível com ou sem enchimento.</p>
-            </div>
-          </article>
+          {mainProduct && (
+            <article className="product product-main">
+              <Image
+                src={mainProduct.image}
+                alt={mainProduct.alt}
+                width={900}
+                height={610}
+                loading="lazy"
+                sizes="(max-width: 900px) 50vw, 40vw"
+                unoptimized={mainProduct.image.startsWith('http')}
+              />
+              <div className="product-caption">
+                <span>{mainProduct.indexLabel}</span>
+                <h3>{mainProduct.title}</h3>
+                <p>{mainProduct.description}</p>
+              </div>
+            </article>
+          )}
 
-          <article className="product product-side">
-            <Image
-              src="/images/trancatto/asset-7.png"
-              alt="Detalhe da trama de corda náutica"
-              width={720}
-              height={430}
-              loading="lazy"
-              sizes="(max-width: 900px) 50vw, 25vw"
-            />
-            <div className="product-caption">
-              <span>02</span>
-              <h3>Corda com alma</h3>
-              <p>Firmeza, baixa absorção de umidade e secagem rápida.</p>
-            </div>
-          </article>
+          {sideProduct && (
+            <article className="product product-side">
+              <Image
+                src={sideProduct.image}
+                alt={sideProduct.alt}
+                width={720}
+                height={430}
+                loading="lazy"
+                sizes="(max-width: 900px) 50vw, 25vw"
+                unoptimized={sideProduct.image.startsWith('http')}
+              />
+              <div className="product-caption">
+                <span>{sideProduct.indexLabel}</span>
+                <h3>{sideProduct.title}</h3>
+                <p>{sideProduct.description}</p>
+              </div>
+            </article>
+          )}
         </section>
 
         <section className="feature">
           <div className="feature-image">
             <Image
-              src="/images/trancatto/asset-9.png"
-              alt="Textura de corda náutica Trançatto"
+              src={content.featureImage}
+              alt={content.featureImageAlt}
               width={1100}
               height={850}
               loading="lazy"
               sizes="50vw"
+              unoptimized={content.featureImage.startsWith('http')}
             />
           </div>
           <div className="feature-copy">
-            <p className="eyebrow">Feita para durar</p>
+            <p className="eyebrow">{content.featureEyebrow}</p>
             <h2>
-              Por dentro,
-              <br />
-              tecnologia.
-              <br />
-              Por fora, design.
+              <MultlineTitle value={content.featureTitle} />
             </h2>
-            <p>
-              A combinação de EVA e polipropileno entrega estabilidade para assentos e encostos,
-              resistência ao uso intenso e a liberdade criativa que cada projeto pede.
-            </p>
+            <p>{content.featureCopy}</p>
             <ul>
-              <li>
-                <span>01</span> Resistência às condições externas
-              </li>
-              <li>
-                <span>02</span> Excelente memória e estabilidade
-              </li>
-              <li>
-                <span>03</span> Acabamento premium
-              </li>
+              {content.featureBullets.map((bullet, index) => (
+                <li key={bullet}>
+                  <span>{String(index + 1).padStart(2, '0')}</span> {bullet}
+                </li>
+              ))}
             </ul>
           </div>
         </section>
 
         <section className="gallery-section" aria-labelledby="gallery-title">
           <div className="gallery-heading section">
-            <p className="eyebrow dark">Matéria em detalhe</p>
+            <p className="eyebrow dark">{content.galleryEyebrow}</p>
             <h2 id="gallery-title">
-              Texturas para
+              {content.galleryTitleLine1}
               <br />
-              ver de perto.
+              {content.galleryTitleLine2}
             </h2>
-            <p>
-              Tramas, espessuras e cores registradas na nossa produção. Cada linha nasce para
-              ganhar escala nas mãos de quem projeta.
-            </p>
+            <p>{content.gallerySubtitle}</p>
           </div>
 
-          <div className="gallery-grid">
-            <figure className="gallery-wide">
-              <Image
-                src="/images/trancatto/gallery/verde-1.jpg"
-                alt="Linha verde-pinho em detalhe"
-                width={1200}
-                height={675}
-                loading="lazy"
-              />
-              <figcaption>Verde pinho · corda náutica</figcaption>
-            </figure>
-            <figure>
-              <Image
-                src="/images/trancatto/gallery/terra-1.jpg"
-                alt="Trama terracota produzida pela Trançatto"
-                width={600}
-                height={600}
-                loading="lazy"
-              />
-              <figcaption>Terracota · tricô náutico</figcaption>
-            </figure>
-            <figure>
-              <Image
-                src="/images/trancatto/gallery/verde-2.jpg"
-                alt="Rolos de corda náutica verde-pinho"
-                width={600}
-                height={600}
-                loading="lazy"
-              />
-              <figcaption>Acabamento e consistência</figcaption>
-            </figure>
-            <figure className="gallery-tall">
-              <Image
-                src="/images/trancatto/gallery/terra-2.jpg"
-                alt="Detalhe do acabamento terracota"
-                width={600}
-                height={800}
-                loading="lazy"
-              />
-              <figcaption>Cor firme · toque preciso</figcaption>
-            </figure>
-            <figure className="gallery-wide">
-              <Image
-                src="/images/trancatto/gallery/verde-3.jpg"
-                alt="Produção de corda verde-pinho"
-                width={1200}
-                height={675}
-                loading="lazy"
-              />
-              <figcaption>Produção própria · controle em cada etapa</figcaption>
-            </figure>
+          <div className="gallery-carousel" aria-label="Carrossel de texturas">
+            {content.carouselSlides.map((slide) => (
+              <figure
+                key={`${slide.image}-${slide.caption}`}
+                className={
+                  slide.layout === 'wide'
+                    ? 'gallery-wide'
+                    : slide.layout === 'tall'
+                      ? 'gallery-tall'
+                      : undefined
+                }
+              >
+                <Image
+                  src={slide.image}
+                  alt={slide.alt}
+                  width={slide.layout === 'wide' ? 1200 : 600}
+                  height={slide.layout === 'tall' ? 800 : slide.layout === 'wide' ? 675 : 600}
+                  loading="lazy"
+                  unoptimized={slide.image.startsWith('http')}
+                />
+                <figcaption>{slide.caption}</figcaption>
+              </figure>
+            ))}
           </div>
         </section>
 
         <section className="palette section" id="cores">
           <div className="palette-title">
-            <p className="eyebrow dark">Paleta Trançatto</p>
+            <p className="eyebrow dark">{content.paletteEyebrow}</p>
             <h2>
-              A cor também
+              {content.paletteTitleLine1}
               <br />
-              constrói o projeto.
+              {content.paletteTitleLine2}
             </h2>
           </div>
 
           <div className="swatches" aria-label="Seleção de cores">
-            {SWATCHES.map((swatch) => (
+            {content.swatches.map((swatch) => (
               <div key={swatch.name} style={{ '--c': swatch.color } as CSSProperties}>
                 <i />
                 <span>{swatch.name}</span>
@@ -339,18 +311,11 @@ export function TrancattoLanding() {
         <section className="cta" id="contato">
           <div className="cta-bg" />
           <div className="cta-content">
-            <p className="eyebrow">Seu próximo projeto começa aqui</p>
+            <p className="eyebrow">{content.contactEyebrow}</p>
             <h2>
-              Vamos dar
-              <br />
-              forma
-              <br />
-              à sua ideia?
+              <MultlineTitle value={content.contactTitle} />
             </h2>
-            <p>
-              Fale com nosso time para receber o catálogo, consultar cores e encontrar a linha
-              ideal.
-            </p>
+            <p>{content.contactCopy}</p>
 
             <form className="contact-form" id="contact-form" onSubmit={handleContactSubmit}>
               <div className="contact-form-row">
@@ -386,7 +351,7 @@ export function TrancattoLanding() {
                 />
               </label>
               <button className="button" type="submit">
-                Enviar pelo WhatsApp <span aria-hidden="true">↗</span>
+                {content.contactButton} <span aria-hidden="true">↗</span>
               </button>
             </form>
           </div>
@@ -403,9 +368,7 @@ export function TrancattoLanding() {
             unoptimized
           />
           <p>
-            Cordas e tricôs náuticos
-            <br />
-            para móveis e decoração.
+            <MultlineTitle value={content.footerTagline} />
           </p>
         </div>
 
@@ -418,10 +381,14 @@ export function TrancattoLanding() {
 
         <div>
           <small>Conecte-se</small>
-          <a href="https://www.instagram.com/trancatto.ind/" target="_blank" rel="noopener noreferrer">
+          <a href={content.instagramUrl} target="_blank" rel="noopener noreferrer">
             Instagram ↗
           </a>
-          <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer">
+          <a
+            href={`https://wa.me/${content.whatsappNumber}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             WhatsApp ↗
           </a>
         </div>
@@ -443,7 +410,7 @@ export function TrancattoLanding() {
 
       <a
         className="whatsapp"
-        href={`https://wa.me/${WHATSAPP_NUMBER}`}
+        href={`https://wa.me/${content.whatsappNumber}`}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Falar pelo WhatsApp"

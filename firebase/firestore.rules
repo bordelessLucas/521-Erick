@@ -20,18 +20,28 @@ service cloud.firestore {
         && userDoc().role == 'admin';
     }
 
+    function isCollaborator() {
+      return isSignedIn()
+        && exists(userDocPath())
+        && userDoc().role == 'collaborator';
+    }
+
+    function isStaff() {
+      return isAdmin() || isCollaborator();
+    }
+
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
     match /orders/{orderId} {
       allow read: if isSignedIn();
-      allow create, update, delete: if isAdmin();
+      allow create, delete: if isAdmin();
+      // Collaborators can move cards (status + statusChangedAt); admins full update.
+      allow update: if isStaff();
     }
 
     match /users/{userId} {
-      // Admin consulta clientes por CNPJ; dono lê/atualiza o próprio perfil
-      // (inclui bootstrap de role admin via allowlist no client).
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId) || isAdmin();
       allow update: if isOwner(userId) || isAdmin();
@@ -44,6 +54,12 @@ service cloud.firestore {
 
     match /pipelineStages/{stageId} {
       allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Public landing CMS — anyone can read; only admin can edit.
+    match /landingContent/{docId} {
+      allow read: if true;
       allow write: if isAdmin();
     }
   }

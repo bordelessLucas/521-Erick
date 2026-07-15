@@ -13,9 +13,11 @@ import { FirebaseClientRepository } from '@/infrastructure/firebase/FirebaseClie
 import { FirebaseOrderRepository } from '@/infrastructure/firebase/FirebaseOrderRepository';
 import { FirebasePipelineStageRepository } from '@/infrastructure/firebase/FirebasePipelineStageRepository';
 import { FirebaseCollaboratorRepository } from '@/infrastructure/firebase/FirebaseCollaboratorRepository';
+import { FirebaseLandingContentRepository } from '@/infrastructure/firebase/FirebaseLandingContentRepository';
 import { FirebaseAgentOrderLinkRepository } from '@/infrastructure/agent/FirebaseAgentOrderLinkRepository';
 import type { IPipelineStageRepository } from '@/domain/repositories/IPipelineStageRepository';
 import type { ICollaboratorRepository } from '@/domain/repositories/ICollaboratorRepository';
+import type { ILandingContentRepository } from '@/domain/repositories/ILandingContentRepository';
 import { RuleBasedAgentInterpreter } from '@/infrastructure/agent/RuleBasedAgentInterpreter';
 import { StubExternalSystemAdapter } from '@/infrastructure/agent/StubExternalSystemAdapter';
 
@@ -34,6 +36,7 @@ class Container {
   private systemAgentService: SystemAgentService | null = null;
   private pipelineStageRepository: IPipelineStageRepository | null = null;
   private collaboratorRepository: ICollaboratorRepository | null = null;
+  private landingContentRepository: ILandingContentRepository | null = null;
 
   getAuthRepository(): IAuthRepository {
     if (!this.authRepository) {
@@ -70,6 +73,13 @@ class Container {
     return this.collaboratorRepository;
   }
 
+  getLandingContentRepository(): ILandingContentRepository {
+    if (!this.landingContentRepository) {
+      this.landingContentRepository = new FirebaseLandingContentRepository();
+    }
+    return this.landingContentRepository;
+  }
+
   getAdminOrderService(): AdminOrderService {
     if (!this.adminOrderService) {
       this.adminOrderService = new AdminOrderService(
@@ -89,7 +99,6 @@ class Container {
 
   getExternalSystemAdapter(): IExternalSystemAdapter {
     if (!this.externalSystemAdapter) {
-      // Trocar StubExternalSystemAdapter pelo adapter real do Erick quando disponível.
       this.externalSystemAdapter = new StubExternalSystemAdapter();
     }
     return this.externalSystemAdapter;

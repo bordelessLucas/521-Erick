@@ -6,6 +6,7 @@ export interface FirestoreOrderDocument {
   estimatedValue: number;
   weightInKg: number;
   status: OrderStatus;
+  statusChangedAt?: string;
 }
 
 export function mapOrderFromFirestore(
@@ -19,5 +20,6 @@ export function mapOrderFromFirestore(
     estimatedValue: data.estimatedValue,
     weightInKg: data.weightInKg,
     status: data.status,
+    statusChangedAt: data.statusChangedAt || data.orderDate,
   };
 }

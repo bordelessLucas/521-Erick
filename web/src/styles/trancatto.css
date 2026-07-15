@@ -1864,6 +1864,230 @@
   color: var(--ink);
 }
 
+.kanban-column__avg {
+  margin: 0.15rem 0 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+
+.kanban-card--sla-green {
+  border-left: 3px solid #2f7d4a;
+}
+
+.kanban-card--sla-yellow {
+  border-left: 3px solid #c4a035;
+}
+
+.kanban-card--sla-red {
+  border-left: 3px solid #b5402c;
+}
+
+.kanban-card__sla {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  padding: 0.35rem 0.45rem;
+  font-size: 0.72rem;
+  border: 1px solid var(--line);
+  background: #faf8f5;
+}
+
+.kanban-card__sla-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.kanban-card__sla--green .kanban-card__sla-dot {
+  background: #2f7d4a;
+}
+
+.kanban-card__sla--yellow .kanban-card__sla-dot {
+  background: #c4a035;
+}
+
+.kanban-card__sla--red .kanban-card__sla-dot {
+  background: #b5402c;
+}
+
+.kanban-card__sla-label {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kanban-card__sla--green .kanban-card__sla-label {
+  color: #2f7d4a;
+}
+
+.kanban-card__sla--yellow .kanban-card__sla-label {
+  color: #8a7020;
+}
+
+.kanban-card__sla--red .kanban-card__sla-label {
+  color: #b5402c;
+}
+
+.kanban-card__sla-time {
+  margin-left: auto;
+  color: var(--label);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-portal-tabs {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin: 0 0 1.5rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.75rem;
+}
+
+.admin-portal-tabs__btn {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--label);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.admin-portal-tabs__btn:hover {
+  color: var(--ink);
+}
+
+.admin-portal-tabs__btn.is-active {
+  color: var(--pine);
+  border-color: var(--line);
+  background: #fff;
+}
+
+.landing-cms {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.landing-cms__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.landing-cms__preview-link {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--pine);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.landing-cms__grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .landing-cms__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.landing-cms__panel {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.landing-cms__panel h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.landing-cms__panel label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--label);
+}
+
+.landing-cms__panel input,
+.landing-cms__panel textarea {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--line);
+  font: inherit;
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: #fff;
+}
+
+.landing-cms__slide {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--line);
+}
+
+.landing-cms__slide-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.landing-cms__status {
+  font-size: 0.82rem;
+  color: var(--label);
+}
+
+.landing-cms__status--ok {
+  color: #2f7d4a;
+}
+
+.landing-cms__status--err {
+  color: #b5402c;
+}
+
+.gallery-carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0.25rem 1.25rem 1.25rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gallery-carousel figure {
+  flex: 0 0 min(78vw, 28rem);
+  scroll-snap-align: start;
+  margin: 0;
+}
+
+.gallery-carousel img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.gallery-carousel figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--label);
+}
+
 .kanban-modal {
   position: fixed;
   inset: 0;

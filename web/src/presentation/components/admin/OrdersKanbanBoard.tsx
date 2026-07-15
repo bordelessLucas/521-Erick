@@ -60,6 +60,7 @@ export function OrdersKanbanBoard({
           key={step.id}
           status={step.id}
           label={step.shortLabel}
+          averageMinutes={step.averageMinutes ?? 0}
           orders={ordersByStatus[step.id] || []}
           draggingOrderId={draggingOrderId}
           isDropTarget={dropTargetStatus === step.id}

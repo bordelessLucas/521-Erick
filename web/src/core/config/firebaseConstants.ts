@@ -11,6 +11,7 @@ export const FIRESTORE_COLLECTIONS = {
   orders: 'orders',
   users: 'users',
   pipelineStages: 'pipelineStages',
+  landingContent: 'landingContent',
 } as const;
 
 /** CNPJ do Erick — ao informar na tela de login, libera o acesso admin. */

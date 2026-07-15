@@ -43,6 +43,7 @@ export function OrdersKanbanBoard({
         <KanbanColumn
           key={step.id}
           label={step.shortLabel}
+          averageMinutes={step.averageMinutes ?? 0}
           orders={ordersByStatus[step.id] || []}
           onPressOrder={onPressOrder}
           onMoveOrder={onMoveOrder}

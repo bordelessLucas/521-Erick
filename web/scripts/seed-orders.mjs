@@ -64,6 +64,7 @@ function buildSeedOrders(clientCnpj) {
     ...order,
     clientCnpj,
     status: ORDER_STATUSES[index],
+    statusChangedAt: order.orderDate,
   }));
 }
 
